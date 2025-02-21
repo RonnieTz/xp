@@ -2,6 +2,9 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  user-select: none; /* disable text selection */
+  margin: 0;
+  font-family: Tahoma, sans-serif; /* updated font-family */
 }
 
 html {
@@ -108,11 +111,11 @@ section {
 
 body {
   min-height: 100vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    Helvetica, Arial, sans-serif;
+  font-family: Tahoma, sans-serif; /* updated font-family */
   background-color: #fff;
   color: #000;
   line-height: 1.5;
+  overflow: hidden;
 }
 
 ol,

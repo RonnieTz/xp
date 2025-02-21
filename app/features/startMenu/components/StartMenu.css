@@ -1,0 +1,30 @@
+.start-menu {
+  overflow: hidden; /* ensure size change is visible */
+}
+
+/* Appear/Enter rules */
+.start-menu-appear,
+.start-menu-enter {
+  width: 0;
+  height: 0;
+}
+.start-menu-appear-active,
+.start-menu-enter-active {
+  width: 500px;
+  height: 600px;
+  transition: all 0.15s;
+}
+.start-menu-appear-done,
+.start-menu-enter-done {
+  width: 500px;
+  height: 600px;
+}
+
+/* Exit rules */
+.start-menu-exit {
+  width: 500px;
+  height: 600px;
+}
+.start-menu-exit-active {
+  transition: all 0.3s;
+}

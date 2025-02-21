@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import sampleReducer from '../features/sample/sampleSlice';
+import startMenu from '../features/startMenu/startMenuSlice';
+import fileSystem from '../features/fileSystem/fileSystemSlice';
 
-// ...existing code or import reducers...
 export const store = configureStore({
   reducer: {
-    sample: sampleReducer,
-    // e.g., yourReducer: yourReducer
+    startMenu,
+    fileSystem,
   },
 });
 
