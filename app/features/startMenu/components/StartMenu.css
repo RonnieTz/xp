@@ -28,3 +28,16 @@
 .start-menu-exit-active {
   transition: all 0.3s;
 }
+
+.all-programs-menu.fade-in {
+  animation: fadeIn 0.2s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

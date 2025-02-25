@@ -4,7 +4,7 @@
   box-sizing: border-box;
   user-select: none; /* disable text selection */
   margin: 0;
-  font-family: Tahoma, sans-serif; /* updated font-family */
+  font-family: Tahoma, 'sans-serif'; /* updated font-family */
 }
 
 html {

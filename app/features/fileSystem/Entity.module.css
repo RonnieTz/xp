@@ -1,0 +1,48 @@
+.entityContainer {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 100;
+  position: absolute;
+}
+
+.title {
+  padding: 0 4px;
+  border: 1px dotted transparent;
+  box-sizing: border-box;
+}
+
+.titleSelected {
+  color: white;
+  background-color: #316ac5;
+  border: 1px dotted #ce953a;
+}
+
+.titleRoot {
+  color: white;
+  text-shadow: 1px 1px 2px black;
+}
+
+.titleDefault {
+  color: black;
+}
+
+.shortcutIcon {
+  height: 10px;
+  width: 10px;
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+}

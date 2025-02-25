@@ -1,0 +1,38 @@
+.all-programs-menu {
+  position: absolute;
+  display: flex;
+  border: 1.5px solid #55a1ff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.7);
+  z-index: 101000;
+  background-color: #fff;
+  cursor: default;
+}
+
+/* Positioning variants */
+.all-programs-menu.top {
+  top: 0;
+}
+.all-programs-menu.bottom {
+  bottom: 0;
+}
+.all-programs-menu.root {
+  left: 78%;
+}
+.all-programs-menu:not(.root) {
+  left: 100%;
+}
+
+/* Vertical bar and content */
+.vertical-bar {
+  width: 5px;
+  background: #2d7ce2;
+}
+.content {
+  background: #fff;
+  flex-grow: 1;
+  /* Optional: padding can be added here if needed */
+}
+.empty {
+  padding: 0 10px;
+  font-size: 13px;
+}

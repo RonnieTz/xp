@@ -1,62 +1,70 @@
-import React, { useMemo } from 'react';
 import Image from 'next/image';
-import { selectEntity } from '../fileSystem/fileSystemSlice';
 import { Entity } from '../fileSystem/fileSystemSlice';
-import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
+import { useAppSelector } from '../../hooks/reduxHooks';
+import { useEntities } from '../../hooks/useEntities';
+import styles from './Entity.module.css';
+import EntityIcons from './EntityIcons';
 
 interface EntityProps {
   entity: Entity;
 }
 
 const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
-  const dispatch = useAppDispatch();
-  const selectedEntityIds = useAppSelector(state => state.fileSystem.selectedEntityIds);
+  const selectedEntityIds = useAppSelector(
+    (state) => state.fileSystem.selectedEntityIds
+  );
+  const { selectEntity, handleDragStart, handleDoubleClickEntity } =
+    useEntities();
 
-  const containerStyle: React.CSSProperties = {
-    width: 80,
-    height: 80,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: 12,
-    fontWeight: 100,
+  // Compute dynamic style for positioning
+  const dynamicContainerStyle: React.CSSProperties = {
+    top: entity.position.y,
+    left: entity.position.x,
   };
 
-  const titleStyle = useMemo<React.CSSProperties>(() => {
-    const baseStyle: React.CSSProperties = {
-      padding: '0 4px',
-      border: '1px dotted transparent',
-      boxSizing: 'border-box',
-    };
-    if (selectedEntityIds.includes(entity.id)) {
-      return {
-        ...baseStyle,
-        color: 'white',
-        backgroundColor: '#316ac5',
-        border: '1px dotted #ce953a',
-      };
-    }
-    if (entity.folderId === 'root') {
-      return {
-        ...baseStyle,
-        color: 'white',
-        textShadow: '1px 1px 2px black',
-      };
-    }
-    return { ...baseStyle, color: 'black' };
-  }, [selectedEntityIds, entity.id, entity.folderId]);
+  // Compute dynamic style for image with drop-shadow following icon shape and conditional brightness
+  const baseShadow = 'drop-shadow(1px 1px 1px rgba(0,0,0,0.5))';
+  const brightness = selectedEntityIds.includes(entity.id)
+    ? 'brightness(0.6) '
+    : '';
+  const dynamicImageStyle: React.CSSProperties = {
+    filter: brightness + baseShadow,
+  };
+
+  // Compute title classname based on conditions
+  let titleClass = styles.title;
+  if (selectedEntityIds.includes(entity.id)) {
+    titleClass += ' ' + styles.titleSelected;
+  } else if (entity.folderId === 'root') {
+    titleClass += ' ' + styles.titleRoot;
+  } else {
+    titleClass += ' ' + styles.titleDefault;
+  }
 
   return (
     <div
-      style={containerStyle}
+      className={styles.entityContainer}
+      data-entity-id={entity.id}
+      style={dynamicContainerStyle}
+      onDrop={(e) => e.stopPropagation()}
       onClick={(e) => {
         e.stopPropagation();
-        dispatch(selectEntity({ id: entity.id, ctrlPressed: e.ctrlKey }));
+        selectEntity(entity.id, e.ctrlKey);
+      }}
+      onDoubleClick={() => {
+        handleDoubleClickEntity(
+          entity.type === 'shortcut' ? entity.targetId : entity.id
+        );
       }}
     >
-      <Image src={entity.iconPath} alt={`${entity.name} icon`} width={40} height={40} />
-      <span style={titleStyle}>{entity.name}</span>
+      <EntityIcons
+        iconPath={entity.iconPath}
+        alt={`${entity.name} icon`}
+        dynamicImageStyle={dynamicImageStyle}
+        onDragStart={(e) => handleDragStart(e, entity.id)}
+        isShortcut={entity.type === 'shortcut'}
+      />
+      <div className={titleClass}>{entity.name}</div>
     </div>
   );
 };

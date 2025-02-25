@@ -1,40 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export interface Size {
-  width: number;
-  height: number;
-}
-
-export interface Position {
-  x: number;
-  y: number;
-}
-
-export interface WindowEntity {
-  id: string;
-  size: Size;
-  position: Position;
-  isMinimized: boolean;
-  isOpen: boolean;
-  iconPath: string; // added icon property to store the icon path
-  entityId: string; // added property to link the window with an entity
-}
-
-interface WindowsState {
-  windows: WindowEntity[];
-  focusedWindow: string | null;
-  windowsOrder: string[]; // replaced focusHistory with windowsOrder to track zIndex order
-}
-
-const initialState: WindowsState = {
-  windows: [],
-  focusedWindow: null,
-  windowsOrder: [], // initial empty order
-};
+import { initialState, WindowEntity, WindowsState } from './windowsState';
 
 const windowsSlice = createSlice({
   name: 'windows',
-  initialState,
+  initialState, // now imported from windowsState.ts
   reducers: {
     addWindow(state, action: PayloadAction<WindowEntity>) {
       state.windows.push(action.payload);
@@ -77,16 +46,50 @@ const windowsSlice = createSlice({
         win.isMinimized = !win.isMinimized;
       }
     },
+    minimizeWindow(state, action: PayloadAction<string>) {
+      const win = state.windows.find((win) => win.id === action.payload);
+      if (win) {
+        win.isMinimized = true;
+      }
+    },
     openWindow(state, action: PayloadAction<string>) {
       const win = state.windows.find((win) => win.id === action.payload);
       if (win) {
         win.isOpen = true;
+        win.isMinimized = false;
+        state.focusedWindow = action.payload;
+        state.windowsOrder = state.windowsOrder.filter(
+          (id) => id !== action.payload
+        );
+        state.windowsOrder.push(action.payload);
       }
     },
     closeWindow(state, action: PayloadAction<string>) {
       const win = state.windows.find((win) => win.id === action.payload);
       if (win) {
         win.isOpen = false;
+      }
+    },
+    unfocusWindow(state) {
+      state.focusedWindow = null;
+    },
+    // New reducer to open window based on an entity's windowId
+    restoreWindow(state, action: PayloadAction<string>) {
+      const win = state.windows.find((win) => win.id === action.payload);
+      if (win) {
+        win.isMinimized = false;
+      }
+    },
+    maximizeWindow(state, action: PayloadAction<string>) {
+      const win = state.windows.find((win) => win.id === action.payload);
+      if (win) {
+        win.isMaximized = true;
+      }
+    },
+    unmaximizeWindow(state, action: PayloadAction<string>) {
+      const win = state.windows.find((win) => win.id === action.payload);
+      if (win) {
+        win.isMaximized = false;
       }
     },
   },
@@ -100,5 +103,10 @@ export const {
   toggleMinimizeWindow,
   openWindow,
   closeWindow,
+  unfocusWindow,
+  minimizeWindow,
+  restoreWindow,
+  maximizeWindow,
+  unmaximizeWindow,
 } = windowsSlice.actions;
 export default windowsSlice.reducer;

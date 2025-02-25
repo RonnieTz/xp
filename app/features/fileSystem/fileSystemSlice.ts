@@ -17,26 +17,33 @@ export interface BaseEntity {
   position: Position; // added position property for desktop dragging
   folderId: string; // made folderId required
   iconPath: StaticImageData; // added iconPath property for entity icon
+  // New properties to track dates
+  createdDate: string;
+  modifiedDate: string;
 }
 
 export interface FileEntity extends BaseEntity {
   type: 'file';
   content: string;
+  windowId: string;
 }
 
 export interface ApplicationEntity extends BaseEntity {
   type: 'application';
   executablePath: string;
+  windowId: string;
 }
 
 export interface ShortcutEntity extends BaseEntity {
   type: 'shortcut';
   targetId: string;
+  // no windowId for shortcuts
 }
 
 export interface FolderEntity extends BaseEntity {
   type: 'folder';
   children: Entity[];
+  windowId: string;
 }
 
 export type Entity =
@@ -51,89 +58,38 @@ interface FileSystemState {
   selectedEntityIds: string[];
 }
 
+// helper function to generate a random position between 50 and 500
+
 const initialState: FileSystemState = {
   entities: [
-    {
-      id: '1',
-      name: 'file1',
-      type: 'file',
-      content: 'file1 content',
-      position: { x: 0, y: 0 },
-      folderId: 'root',
-      iconPath: foldericon,
-    },
-    {
-      id: '2',
-      name: 'file2',
-      type: 'file',
-      content: 'file2 content',
-      position: { x: 0, y: 0 },
-      folderId: 'root',
-      iconPath: foldericon,
-    },
-    {
-      id: '3',
-      name: 'app1',
-      type: 'application',
-      executablePath: '/app1',
-      position: { x: 0, y: 0 },
-      folderId: 'root',
-      iconPath: foldericon,
-    },
-    {
-      id: '4',
-      name: 'app2',
-      type: 'application',
-      executablePath: '/app2',
-      position: { x: 0, y: 0 },
-      folderId: 'root',
-      iconPath: foldericon,
-    },
-    {
-      id: '5',
-      name: 'shortcut1',
-      type: 'shortcut',
-      targetId: '1',
-      position: { x: 0, y: 0 },
-      folderId: 'root',
-      iconPath: foldericon,
-    },
-    {
-      id: '6',
-      name: 'shortcut2',
-      type: 'shortcut',
-      targetId: '2',
-      position: { x: 0, y: 0 },
-      folderId: 'root',
-      iconPath: foldericon,
-    },
     {
       id: '7',
       name: 'folder1',
       type: 'folder',
-      position: { x: 0, y: 0 },
+      position: {
+        x: 0,
+        y: 0,
+      },
       folderId: 'root',
       iconPath: foldericon,
-      children: [
-        {
-          id: '8',
-          name: 'file3',
-          type: 'file',
-          content: 'file3 content',
-          position: { x: 0, y: 0 },
-          folderId: '7',
-          iconPath: foldericon,
-        },
-        {
-          id: '9',
-          name: 'file4',
-          type: 'file',
-          content: 'file4 content',
-          position: { x: 0, y: 0 },
-          folderId: '7',
-          iconPath: foldericon,
-        },
-      ],
+      windowId: 'win-7',
+      children: [],
+      createdDate: '2023-01-01T00:00:00.000Z',
+      modifiedDate: '2023-01-01T00:00:00.000Z',
+    },
+    {
+      type: 'shortcut',
+      id: '8',
+      name: 'shortcut1',
+      position: {
+        x: 0,
+        y: 80,
+      },
+      folderId: 'root',
+      iconPath: foldericon,
+      targetId: '7',
+      createdDate: '2023-01-01T00:00:00.000Z',
+      modifiedDate: '2023-01-01T00:00:00.000Z',
     },
   ],
   // Initialize selection as empty
@@ -171,9 +127,24 @@ const fileSystemSlice = createSlice({
         state.selectedEntityIds = [id];
       }
     },
+    updateEntityPosition: (
+      state,
+      action: PayloadAction<{ id: string; x: number; y: number }>
+    ) => {
+      const { id, x, y } = action.payload;
+      const entity = state.entities.find((e) => e.id === id);
+      if (entity) {
+        entity.position = { x, y };
+      }
+    },
   },
 });
 
-export const { addEntity, removeEntity, setSelectedEntityIds, selectEntity } =
-  fileSystemSlice.actions;
+export const {
+  addEntity,
+  removeEntity,
+  setSelectedEntityIds,
+  selectEntity,
+  updateEntityPosition,
+} = fileSystemSlice.actions;
 export default fileSystemSlice.reducer;

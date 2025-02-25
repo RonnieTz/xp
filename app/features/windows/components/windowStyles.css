@@ -1,0 +1,154 @@
+.window-header-container {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.window-header-image {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+.window-header-title {
+  margin-left: 12px;
+  color: white;
+  font-weight: 500;
+  font-size: 16px;
+  z-index: 1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  height: 100%;
+  transform: translateY(2px);
+}
+
+.window-header-icon {
+  margin-right: 8px;
+}
+
+.window-header-controls {
+  position: absolute;
+  top: 7;
+  right: 5;
+  height: 30px;
+  width: 93px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.window-header-controls div {
+  height: 100%;
+  aspect-ratio: 1/1;
+  transition: all 0.1s;
+}
+
+.window-header-controls div:hover {
+  filter: brightness(1.2);
+}
+.window-header-controls div:active {
+  filter: brightness(0.9);
+}
+
+.left-border {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  height: calc(100% - 40px);
+}
+
+.right-border {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 4px;
+  height: calc(100% - 40px);
+}
+
+.bottom-border {
+  position: absolute;
+  bottom: 0;
+  left: 4px;
+  width: calc(100% - 8px);
+  height: 4px;
+}
+
+.unfocused {
+  filter: invert(0.25) brightness(1.1);
+}
+
+.window-content {
+  background-color: white;
+  height: calc(100% - 44px);
+  width: calc(100% - 8px);
+  position: absolute;
+  top: 40px;
+  left: 4px;
+}
+
+.resize-anchor {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 100;
+}
+
+.resize-anchor.top {
+  top: -5px;
+  left: 25%;
+  width: 50%;
+  height: 10px;
+  cursor: ns-resize;
+}
+
+.resize-anchor.bottom {
+  bottom: -5px;
+  left: 25%;
+  width: 50%;
+  height: 10px;
+  cursor: ns-resize;
+}
+
+.resize-anchor.left {
+  left: -5px;
+  top: 25%;
+  width: 10px;
+  height: 50%;
+  cursor: ew-resize;
+}
+
+.resize-anchor.right {
+  right: -5px;
+  top: 25%;
+  width: 10px;
+  height: 50%;
+  cursor: ew-resize;
+}
+
+.resize-anchor.top-left {
+  top: -5px;
+  left: -5px;
+  cursor: nwse-resize;
+}
+
+.resize-anchor.top-right {
+  top: -5px;
+  right: -5px;
+  cursor: nesw-resize;
+}
+
+.resize-anchor.bottom-left {
+  bottom: -5px;
+  left: -5px;
+  cursor: nesw-resize;
+}
+
+.resize-anchor.bottom-right {
+  bottom: -5px;
+  right: -5px;
+  cursor: nwse-resize;
+}
