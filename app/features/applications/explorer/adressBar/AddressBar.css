@@ -1,0 +1,69 @@
+.address-bar {
+  height: 30px;
+  background-color: #f2f2ee; /* Same as toolbar background color */
+  border-top: 1px solid white;
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+  display: flex;
+}
+
+.address-label {
+  color: #7f7c73;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70px;
+  height: 100%;
+  background: linear-gradient(#efeee9 90%, #cdcabb);
+}
+
+.address-display-container {
+  height: 100%;
+  flex: 1;
+  position: relative;
+}
+
+.address-display {
+  padding-left: 30px;
+  border: 1px solid #7f9db9;
+  height: 100%;
+  outline: none;
+  width: 100%;
+  cursor: default;
+}
+
+.address-folder-icon {
+  position: absolute;
+  left: 5px;
+  top: 3px;
+}
+
+.address-expand-button {
+  position: absolute;
+  right: 2px;
+  border: 1px solid #b8cbf6;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 2px;
+  height: 25px;
+  background-color: #c8d6fb;
+  border-radius: 2px;
+  transition: all 0.1s;
+}
+
+.address-expand-arrow {
+  rotate: 90deg;
+  translate: 1px 0;
+  color: #4d6185;
+  font-size: 18px;
+}
+
+.address-expand-button:hover {
+  background-color: #ceeafd;
+}
+.address-expand-button:active {
+  background-color: #6e94f1;
+}

@@ -65,7 +65,12 @@ const Window: React.FC<WindowProps> = ({ window }) => {
         e.dataTransfer.setDragImage(new Image(), 0, 0);
       }}
     >
-      <div onMouseDown={handleMouseDown}>
+      <div
+        onMouseDown={(e) => {
+          if (window.isMaximized) return;
+          handleMouseDown(e);
+        }}
+      >
         <WindowHeader
           window={window}
           isFocused={isFocused}
@@ -75,7 +80,7 @@ const Window: React.FC<WindowProps> = ({ window }) => {
           unmaximize={unmaximize}
         />
       </div>
-      <WindowContent isMaximized={window.isMaximized} />
+      <WindowContent window={window} />
       {!window.isMaximized && (
         <>
           <WindowBorders isFocused={isFocused} />

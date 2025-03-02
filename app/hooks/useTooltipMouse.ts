@@ -17,8 +17,13 @@ export default function useTooltipMouse() {
     timerRef.current = window.setTimeout(() => {
       setPosition({ x: e.clientX, y: e.clientY + 20 });
       setShowTooltip(true);
-    }, 400);
+    }, 700);
   }, []);
+
+  const hideTooltip = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setShowTooltip(false);
+  };
 
   const handleMouseLeave = useCallback(() => {
     if (timerRef.current) {
@@ -28,5 +33,11 @@ export default function useTooltipMouse() {
     setShowTooltip(false);
   }, []);
 
-  return { position, showTooltip, handleMouseMove, handleMouseLeave };
+  return {
+    position,
+    showTooltip,
+    handleMouseMove,
+    handleMouseLeave,
+    hideTooltip,
+  };
 }

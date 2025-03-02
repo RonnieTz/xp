@@ -1,0 +1,108 @@
+.standard-buttons-bar {
+  height: 45px; /* Set the height */
+  background-color: #f2f2ee; /* Same as toolbar background color */
+  border-top: 1px solid white; /* Top border */
+  border-bottom: 1px solid #d8d2bd; /* Bottom border */
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+  padding: 0 2px; /* Optional: Add some horizontal padding */
+  overflow: hidden; /* Hide overflow */
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent; /* Transparent border in normal state */
+  border-radius: 3px; /* Rounded corners */
+  transition: all 0.1s; /* Smooth transition for border change */
+  height: 100%;
+  padding: 0 5px;
+  position: relative;
+}
+.back-label {
+  margin-right: 10px; /* Space between label and triangle */
+  color: black; /* Label color */
+  font-size: 14px;
+}
+
+.back-button:active .back-label {
+  color: #ffffff;
+}
+
+.back-button:hover {
+  background: linear-gradient(#fefefd, #edece5);
+  border: 1px solid #cecec3; /* Change border color on hover */
+  box-shadow: 0 -1px 1px 0 #cecec3 inset;
+}
+.back-button:active {
+  background: #e0e0d7;
+  border: 1px solid #9d9d92; /* Change border color on hover */
+  box-shadow: 0 0 2px 0 #cecec3 inset;
+  color: '#ffffff';
+}
+
+.back-button-icon {
+  display: flex;
+  align-items: center;
+}
+
+.circle {
+  width: 30px; /* Circle diameter */
+  height: 30px; /* Circle diameter */
+  background: linear-gradient(#6bc22e, #17b007); /* Circle color */
+  border: 1px solid #019c00; /* Dark green border */
+  border-radius: 50%; /* Make it a circle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.divider {
+  border-left: 1px solid #cac6af;
+  border-right: 1px solid white;
+  height: 100%; /* Height of the divider */
+  display: none;
+  position: absolute;
+  right: 20;
+}
+
+.back-button:hover .divider {
+  display: block; /* Show on hover */
+}
+.back-button:active .divider {
+  display: block; /* Show on hover */
+  border-left: 1px solid #9d9d92;
+}
+
+.back-button.disabled {
+  opacity: 0.5; /* Reduce opacity for disabled state */
+  filter: grayscale(1);
+  border: none;
+  box-shadow: none;
+}
+
+.back-button.disabled .back-label,
+.back-button.disabled .circle,
+.back-button.disabled .divider {
+  color: #a0a0a0; /* Gray color for disabled state */
+}
+
+.back-button.disabled .divider {
+  display: none;
+}
+
+.back-button.disabled .circle {
+  border: 1px solid #a0a0a0; /* Gray border for disabled state */
+}
+
+.back-button.disabled:hover {
+  background: none; /* No hover effect when disabled */
+}
+
+.vertical-divider {
+  border-left: 1px solid #cac6af;
+  height: 95%;
+  width: 0;
+  margin: 0 2px;
+}

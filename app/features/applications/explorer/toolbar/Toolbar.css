@@ -1,0 +1,196 @@
+.explorer-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 30px;
+  background-color: #f2f2ee;
+  /* ...existing code... */
+}
+
+.toolbar-left {
+  padding: 1px;
+  border-bottom: 1px solid #d8d2bd;
+  border-right: 1px solid #d8d2bd;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  /* ...existing code... */
+}
+
+.toolbar-right {
+  border-left: 1px solid white;
+  border-bottom: 1px solid #d8d2bd;
+  display: flex;
+  width: 50px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  /* ...existing code... */
+}
+
+.toolbar-menu-item {
+  padding: 0 8px;
+  height: 90%;
+  position: relative;
+  font-size: 14;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.toolbar-menu-item:hover {
+  background-color: #316ac5;
+  color: white;
+  /* ...additional styles... */
+}
+
+.toolbar-menu-item.active {
+  background-color: #316ac5;
+  color: white;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1.5px solid #aca899;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  padding: 0; /* Default padding */
+}
+
+.dropdown-menu.with-icon {
+  padding-left: 10px; /* Additional padding when any item has an icon */
+}
+
+.dropdown-menu-item {
+  height: 25px;
+  cursor: default;
+  color: black;
+  font-size: 13px;
+  padding: 0 20px;
+  text-wrap: nowrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.dropdown-menu-item:hover {
+  background-color: #316ac5;
+  color: white;
+}
+
+.menu-item-left {
+  display: flex;
+  align-items: center;
+  padding-left: 0; /* Default padding */
+}
+
+.menu-item-left.icon-present {
+  padding-left: 10px; /* Additional padding when icon is present */
+}
+
+.menu-item-triangle {
+  font-size: 8px;
+  color: black;
+  position: absolute;
+  right: 5px;
+}
+
+.dropdown-menu-item:hover .menu-item-triangle {
+  color: white;
+}
+
+.menu-item-dot,
+.menu-item-tick {
+  display: inline-block;
+  width: 15px;
+  position: absolute;
+  left: 7px;
+  color: black;
+  font-weight: 600;
+}
+
+.dropdown-menu-item:hover .menu-item-dot,
+.dropdown-menu-item:hover .menu-item-tick {
+  color: white;
+}
+
+.menu-item-label {
+  text-wrap: no-wrap;
+  margin-right: 20px;
+}
+
+.menu-divider {
+  height: 1px;
+  width: 95%;
+  background-color: #aca899;
+  margin: 3px auto;
+}
+
+.menu-item-shortcut {
+  color: black;
+  font-size: 14px;
+  margin-left: 20px;
+  text-align: right;
+}
+
+.dropdown-menu-item:hover .menu-item-shortcut {
+  color: white;
+}
+
+.dropdown-menu-item.disabled {
+  color: #a0a0a0;
+  cursor: default;
+}
+
+.dropdown-menu-item.disabled .menu-item-shortcut,
+.dropdown-menu-item.disabled .menu-item-dot,
+.dropdown-menu-item.disabled .menu-item-tick,
+.dropdown-menu-item.disabled .menu-item-triangle {
+  color: #a0a0a0;
+}
+
+.dropdown-menu-item.disabled:hover {
+  background-color: transparent;
+  color: #a0a0a0;
+}
+
+.dropdown-menu-item.disabled:hover .menu-item-shortcut,
+.dropdown-menu-item.disabled:hover .menu-item-dot,
+.dropdown-menu-item.disabled:hover .menu-item-tick,
+.dropdown-menu-item.disabled:hover .menu-item-triangle {
+  color: #a0a0a0;
+}
+
+.menu-item-icon {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  vertical-align: middle;
+  left: 6px;
+}
+
+.dropdown-menu-item.disabled .menu-item-icon {
+  opacity: 0.5;
+}
+
+/* ...additional styles... */
+
+.expand-menu {
+  position: absolute;
+  left: 100%;
+  top: -1.5px;
+  background-color: white;
+  border: 1.5px solid #aca899;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.with-icon {
+  padding-left: 30px; /* Additional padding when any item has an icon */
+}

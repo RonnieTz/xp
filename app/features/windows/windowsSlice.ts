@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { initialState, WindowEntity, WindowsState } from './windowsState';
+import { initialState, WindowEntity } from './windowsState';
 
 const windowsSlice = createSlice({
   name: 'windows',
-  initialState, // now imported from windowsState.ts
+  initialState,
   reducers: {
     addWindow(state, action: PayloadAction<WindowEntity>) {
       state.windows.push(action.payload);
@@ -50,6 +50,7 @@ const windowsSlice = createSlice({
       const win = state.windows.find((win) => win.id === action.payload);
       if (win) {
         win.isMinimized = true;
+        state.focusedWindow = null;
       }
     },
     openWindow(state, action: PayloadAction<string>) {

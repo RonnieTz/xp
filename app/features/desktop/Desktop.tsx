@@ -6,15 +6,19 @@ import EntityComponent from '../fileSystem/Entity';
 import { useEntities } from '../../hooks/useEntities';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { unfocusWindow } from '../windows/windowsSlice';
-import Window from '../windows/components/Window'; // added import
+import Window from '../windows/components/Window';
+import { useOpenSelectedEntities } from '../../hooks/useOpenSelectedEntities';
+import { useArrowSelection } from '../../hooks/useArrowSelection';
 import './Desktop.css';
 
 export default function Desktop() {
   const { entities, clearSelections, handleDrop, handleDragOver } =
     useEntities();
   const { menuIsOpen } = useAppSelector((state) => state.startMenu);
-  const windows = useAppSelector((state) => state.windows.windows); // get windows
+  const windows = useAppSelector((state) => state.windows.windows);
   const dispatch = useAppDispatch();
+  const { handleEnter } = useOpenSelectedEntities();
+  const { handleArrowKey } = useArrowSelection();
 
   const desktopEntities = entities.filter(
     (entity) => entity.folderId === 'root'
@@ -25,17 +29,33 @@ export default function Desktop() {
     dispatch(unfocusWindow());
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      handleEnter();
+    } else if (
+      e.key === 'ArrowUp' ||
+      e.key === 'ArrowDown' ||
+      e.key === 'ArrowLeft' ||
+      e.key === 'ArrowRight'
+    ) {
+      handleArrowKey(
+        e.key as 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight'
+      );
+    }
+  };
+
   return (
     <div
       onDrop={handleDrop}
       onDragOver={handleDragOver}
-      className="desktopContainer"
       onClick={handleDesktopClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0} // ensure the element is focusable
+      className="desktopContainer"
     >
       {desktopEntities.map((entity) => (
         <EntityComponent key={entity.id} entity={entity} />
       ))}
-      {/* Render only windows that are open */}
       {windows.map((win) =>
         win.isOpen ? <Window key={win.id} window={win} /> : null
       )}

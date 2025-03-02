@@ -3,6 +3,7 @@ import {
   setSelectedEntityIds,
   updateEntityPosition,
 } from '../features/fileSystem/fileSystemSlice';
+import { addTask } from '../features/tasks/tasksSlice';
 import { openWindow } from '../features/windows/windowsSlice';
 
 export const useEntities = () => {
@@ -103,6 +104,7 @@ export const useEntities = () => {
     if (entity) {
       if ('windowId' in entity) {
         dispatch(openWindow(entity.windowId));
+        dispatch(addTask(entity.windowId));
       }
     }
   };

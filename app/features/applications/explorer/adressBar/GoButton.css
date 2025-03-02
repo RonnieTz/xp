@@ -1,0 +1,48 @@
+.go-button {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent; /* Transparent border in normal state */
+  border-radius: 3px; /* Rounded corners */
+  transition: all 0.1s; /* Smooth transition for border change */
+  height: 100%;
+  padding: 0 5px;
+  position: relative;
+  /* background-color: #eae7d0; */
+}
+
+.go-button-label {
+  margin-right: 10px; /* Space between label and triangle */
+  color: black; /* Label color */
+  font-size: 14px;
+}
+
+.go-button:hover {
+  background: linear-gradient(#fefefd, #edece5);
+  border: 1px solid #cecec3; /* Change border color on hover */
+  box-shadow: 0 -1px 1px 0 #cecec3 inset;
+}
+
+.go-button:active {
+  background: #e0e0d7;
+  border: 1px solid #9d9d92; /* Change border color on hover */
+  box-shadow: 0 0 2px 0 #cecec3 inset;
+  color: '#ffffff';
+}
+
+.go-button-icon {
+  display: flex;
+  align-items: center;
+}
+
+.square {
+  width: 22px; /* Circle diameter */
+  height: 22px; /* Circle diameter */
+  background: linear-gradient(#6bc22e, #17b007); /* Circle color */
+  border: 1px solid #019c00; /* Dark green border */
+  border-radius: 2px; /* Make it a circle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+  box-shadow: 0 0 3px 0px white;
+}

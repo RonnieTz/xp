@@ -1,10 +1,17 @@
 import React from 'react';
+import { WindowEntity } from '../windowsState';
+import { useAppSelector } from '@/app/hooks/reduxHooks';
+import Explorer from '../../applications/explorer/Explorer';
 
 interface WindowContentProps {
-  isMaximized: boolean;
+  window: WindowEntity;
 }
 
-const WindowContent: React.FC<WindowContentProps> = ({ isMaximized }) => {
+const WindowContent: React.FC<WindowContentProps> = ({ window }) => {
+  const { entities } = useAppSelector((state) => state.fileSystem);
+  const { isMaximized } = window;
+  const entity = entities.find((e) => e.id === window.entityId);
+
   return (
     <div
       className="window-content"
@@ -14,7 +21,7 @@ const WindowContent: React.FC<WindowContentProps> = ({ isMaximized }) => {
         left: isMaximized ? 0 : undefined,
       }}
     >
-      Content for the window
+      {entity?.type === 'folder' ? <Explorer folderId={entity.id} /> : null}
     </div>
   );
 };

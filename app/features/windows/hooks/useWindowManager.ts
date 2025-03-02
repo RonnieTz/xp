@@ -8,6 +8,7 @@ import {
   maximizeWindow,
   unmaximizeWindow,
 } from '@/app/features/windows/windowsSlice';
+import { addTask, removeTask } from '@/app/features/tasks/tasksSlice';
 
 interface Pos {
   x: number;
@@ -29,8 +30,16 @@ export function useWindowManager(
   );
   const isFocused = focusedWindow === windowId;
 
-  const open = () => dispatch(openWindow(windowId));
-  const close = () => dispatch(closeWindow(windowId));
+  const open = () => {
+    dispatch(openWindow(windowId));
+    dispatch(addTask(windowId));
+  };
+
+  const close = () => {
+    dispatch(closeWindow(windowId));
+    dispatch(removeTask(windowId));
+  };
+
   const focus = () => dispatch(focusWindow(windowId));
   const minimize = () => dispatch(minimizeWindow(windowId));
   const maximize = () => dispatch(maximizeWindow(windowId));
