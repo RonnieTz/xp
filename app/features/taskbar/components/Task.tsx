@@ -7,6 +7,7 @@ import {
   restoreWindow,
 } from '../../windows/windowsSlice';
 import styles from './Task.module.css';
+import { useEntities } from '@/app/hooks/useEntities';
 
 interface TaskProps {
   iconPath: StaticImageData;
@@ -22,7 +23,19 @@ export default function Task({
   windowId,
 }: TaskProps) {
   const dispatch = useAppDispatch();
-  const windowsOrder = useAppSelector((state) => state.windows.windowsOrder);
+  const { windowsOrder, windows } = useAppSelector((state) => state.windows);
+  const window = windows.find((win) => win.id === windowId);
+  const { entities } = useEntities();
+
+  // Get the current folder entity based on the navigation history
+  const currentFolderId = window?.navigationHistory?.current;
+  const currentEntity = currentFolderId
+    ? entities.find((entity) => entity.id === currentFolderId)
+    : entities.find((entity) => entity.id === window?.entityId);
+
+  // Use the current entity name, or fall back to window title
+  const displayName = currentEntity?.name || title;
+
   const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation();
     if (!isFocused) {
@@ -46,12 +59,12 @@ export default function Task({
     >
       <Image
         src={iconPath}
-        alt={title}
+        alt={displayName}
         width={30}
         height={30}
         className={styles.icon}
       />
-      <span className={styles.title}>{title}</span>
+      <span className={styles.title}>{displayName}</span>
     </div>
   );
 }

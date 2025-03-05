@@ -1,12 +1,12 @@
 import React from 'react';
 import DropdownMenu from './DropdownMenu';
-import MenuItem from './MenuItem';
+import { MenuItem } from './hooks/useExplorerMenuItems';
 
 interface ToolbarMenuItemProps {
   label: string;
   isActive: boolean;
   onMouseEnter: () => void;
-  onClick: () => void;
+  onClick?: () => void;
   items: MenuItem[];
 }
 
@@ -24,7 +24,7 @@ const ToolbarMenuItem: React.FC<ToolbarMenuItemProps> = ({
       onClick={onClick}
     >
       {label}
-      <DropdownMenu isOpen={isActive} items={items} onItemClick={() => {}} />
+      <DropdownMenu isOpen={isActive} items={items} onItemClick={onClick} />
     </div>
   );
 };

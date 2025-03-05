@@ -2,18 +2,7 @@ import React from 'react';
 import DropdownMenuItem from './DropdownMenuItem';
 import MenuDivider from './MenuDivider';
 import { StaticImageData } from 'next/image';
-
-interface MenuItem {
-  label?: string;
-  hasDot?: boolean;
-  hasTick?: boolean;
-  hasSubmenu?: boolean;
-  isDivider?: boolean;
-  shortcut?: string;
-  disabled?: boolean;
-  icon?: StaticImageData;
-  expandItems?: MenuItem[];
-}
+import { MenuItem } from './hooks/useExplorerMenuItems';
 
 interface DropdownMenuProps {
   isOpen: boolean;
@@ -50,10 +39,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
             hasTick={item.hasTick}
             hasSubmenu={item.hasSubmenu}
             shortcut={item.shortcut}
-            disabled={item.disabled}
-            icon={item.icon}
-            expandItems={item.expandItems}
             onClick={() => handleItemClick(item.label)}
+            expandItems={item.expandItems}
             hasPadding={hasIcon}
           />
         )

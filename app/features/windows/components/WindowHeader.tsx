@@ -7,6 +7,7 @@ import { WindowEntity } from '../windowsState';
 import MinimizeButton from './MinimizeButton';
 import MaximizeButton from './MaximizeButton';
 import ExitButton from './ExitButton';
+import { useEntities } from '@/app/hooks/useEntities';
 
 interface WindowHeaderProps {
   isFocused: boolean;
@@ -25,12 +26,26 @@ const WindowHeader: React.FC<WindowHeaderProps> = ({
   maximize,
   unmaximize,
 }) => {
-  const { title, iconPath, isMaximized } = window;
+  const { iconPath, isMaximized, entityId } = window;
+  const { entities } = useEntities();
+  const entity = entities.find((e) => e.id === entityId);
   const buttonStyle = {
     height: '100%',
     width: 'auto',
     ...(!isFocused && { filter: 'grayscale(0.6) brightness(1.4)' }),
   };
+  // Get entities to resolve the current folder name
+
+  // Get the current folder ID from the window's navigation history
+  const currentFolderId = window.navigationHistory?.current || window.entityId;
+
+  // Find the current entity to get its name
+  const currentEntity = entities.find(
+    (entity) => entity.id === currentFolderId
+  );
+
+  // Use the current entity's name if available, otherwise fall back to the window title
+  const displayTitle = currentEntity ? currentEntity.name : window.title;
 
   return (
     <div className="window-header-container">
@@ -47,7 +62,7 @@ const WindowHeader: React.FC<WindowHeaderProps> = ({
           height={28}
           className="window-header-icon"
         />
-        <div style={{ translate: '-2px 2px' }}>{title}</div>
+        <div style={{ translate: '-2px 2px' }}>{displayTitle}</div>
       </span>
       <div className="window-header-controls">
         <MinimizeButton buttonStyle={buttonStyle} minimize={minimize} />

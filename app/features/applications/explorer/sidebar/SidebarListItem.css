@@ -1,0 +1,30 @@
+.sidebar-list-item {
+  padding: 4px 0;
+  color: #215dc6;
+  font-size: 12px;
+  cursor: pointer;
+  list-style-type: none;
+}
+
+.sidebar-list-item:hover {
+  color: #428eff;
+  text-decoration: underline;
+}
+
+.sidebar-list-item-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sidebar-list-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.sidebar-list-item-title {
+  line-height: 16px;
+}

@@ -11,16 +11,24 @@ export interface Position {
   y: number;
 }
 
+// Add navigation history to the WindowEntity interface
+
 export interface WindowEntity {
   id: string;
   title: string;
-  size: Size;
-  position: Position;
-  isMinimized: boolean;
   isOpen: boolean;
+  isMinimized: boolean;
+  isMaximized: boolean;
   iconPath: StaticImageData;
   entityId: string;
-  isMaximized: boolean;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  // Navigation history for folder windows
+  navigationHistory: {
+    past: string[]; // IDs of previously viewed folders
+    current: string; // ID of the currently displayed folder
+    future: string[]; // IDs of folders visited with forward button
+  };
 }
 
 export interface WindowsState {
@@ -32,17 +40,70 @@ export interface WindowsState {
 export const initialState: WindowsState = {
   windows: [
     {
-      id: 'win-7',
-      title: 'Window 7',
+      id: 'folder1Window',
+      title: 'Folder 1',
       size: { width: 800, height: 600 },
       position: { x: 610, y: 110 },
       isMinimized: false,
       isOpen: false,
       iconPath: folderIcon,
-      entityId: '7',
+      entityId: '1',
       isMaximized: false,
+      navigationHistory: {
+        past: [],
+        current: '1',
+        future: [],
+      },
+    },
+    {
+      id: 'folder2Window',
+      title: 'Folder 2',
+      size: { width: 800, height: 600 },
+      position: { x: 510, y: 90 },
+      isMinimized: false,
+      isOpen: false,
+      iconPath: folderIcon,
+      entityId: '2',
+      isMaximized: false,
+      navigationHistory: {
+        past: [],
+        current: '2',
+        future: [],
+      },
+    },
+    {
+      id: 'folder3Window',
+      title: 'Folder 3',
+      size: { width: 800, height: 600 },
+      position: { x: 510, y: 150 },
+      isMinimized: false,
+      isOpen: false,
+      iconPath: folderIcon,
+      entityId: '3',
+      isMaximized: false,
+      navigationHistory: {
+        past: [],
+        current: '3',
+        future: [],
+      },
+    },
+    {
+      id: 'folder4Window',
+      title: 'Folder 4',
+      size: { width: 800, height: 600 },
+      position: { x: 530, y: 170 },
+      isMinimized: false,
+      isOpen: false,
+      iconPath: folderIcon,
+      entityId: '4',
+      isMaximized: false,
+      navigationHistory: {
+        past: [],
+        current: '4',
+        future: [],
+      },
     },
   ],
   focusedWindow: null,
-  windowsOrder: ['win-1', 'win-2', 'win-3', 'win-4', 'win-5', 'win-6', 'win-7'],
+  windowsOrder: [],
 };

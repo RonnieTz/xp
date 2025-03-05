@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/app/hooks/reduxHooks';
-import { Entity } from '../fileSystemSlice';
+import { Entity } from '../fileSystemTypes';
 
 /**
  * Custom hook to get the full path of an entity

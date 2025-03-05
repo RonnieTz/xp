@@ -5,12 +5,14 @@ import arrowIcon from '@/public/arrow-back.svg';
 import arrowDownIcon from '@/public/ArrowDown.svg';
 import Tooltip from '@/app/components/Tooltip';
 import useTooltipMouse from '@/app/hooks/useTooltipMouse';
+import { useEntities } from '@/app/hooks/useEntities';
 
 interface Props {
   disabled?: boolean;
+  windowId: string;
 }
 
-const BackButton = ({ disabled = false }: Props) => {
+const BackButton = ({ disabled = false, windowId }: Props) => {
   const {
     position,
     showTooltip,
@@ -18,11 +20,18 @@ const BackButton = ({ disabled = false }: Props) => {
     handleMouseLeave,
     hideTooltip,
   } = useTooltipMouse();
+  const { handleNavigateBack } = useEntities();
+  const handleClick = () => {
+    if (!disabled) {
+      handleNavigateBack(windowId);
+    }
+    hideTooltip();
+  };
   return (
     <div
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onClick={hideTooltip}
+      onClick={handleClick}
       className={`back-button ${disabled ? 'disabled' : ''}`}
     >
       <div className="back-button-icon">

@@ -1,7 +1,7 @@
 import React from 'react';
 import DropdownMenuItem from './DropdownMenuItem';
 import MenuDivider from './MenuDivider';
-import MenuItem from './MenuItem';
+import { MenuItem } from './hooks/useExplorerMenuItems';
 
 interface ExpandMenuProps {
   items: MenuItem[];
@@ -34,7 +34,10 @@ const ExpandMenu: React.FC<ExpandMenuProps> = ({
             shortcut={item.shortcut}
             disabled={item.disabled}
             icon={item.icon}
-            onClick={() => onItemClick && onItemClick(item.label)}
+            onClick={() => {
+              onItemClick && onItemClick(item.label);
+              item.onClick && item.onClick();
+            }}
             expandItems={item.expandItems}
             hasPadding={hasIcon}
           />

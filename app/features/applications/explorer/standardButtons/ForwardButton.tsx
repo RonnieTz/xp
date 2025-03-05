@@ -5,12 +5,17 @@ import arrowForwardIcon from '@/public/arrow-forward.svg'; // Ensure you have a 
 import arrowDownIcon from '@/public/ArrowDown.svg';
 import Tooltip from '@/app/components/Tooltip';
 import useTooltipMouse from '@/app/hooks/useTooltipMouse';
+import { useEntities } from '@/app/hooks/useEntities';
 
 interface ForwardButtonProps {
   disabled?: boolean; // Optional disabled prop
+  windowId: string; // Add windowId prop
 }
 
-const ForwardButton: React.FC<ForwardButtonProps> = ({ disabled = false }) => {
+const ForwardButton: React.FC<ForwardButtonProps> = ({
+  disabled = false,
+  windowId,
+}) => {
   const {
     position,
     showTooltip,
@@ -19,11 +24,20 @@ const ForwardButton: React.FC<ForwardButtonProps> = ({ disabled = false }) => {
     hideTooltip,
   } = useTooltipMouse();
 
+  const { handleNavigateForward } = useEntities();
+
+  const handleClick = () => {
+    if (!disabled) {
+      handleNavigateForward(windowId);
+    }
+    hideTooltip();
+  };
+
   return (
     <div
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onClick={hideTooltip}
+      onClick={handleClick}
       className={`back-button ${disabled ? 'disabled' : ''}`}
     >
       <div className="back-button-icon">

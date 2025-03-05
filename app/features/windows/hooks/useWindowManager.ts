@@ -7,6 +7,7 @@ import {
   minimizeWindow,
   maximizeWindow,
   unmaximizeWindow,
+  resetNavigationHistory,
 } from '@/app/features/windows/windowsSlice';
 import { addTask, removeTask } from '@/app/features/tasks/tasksSlice';
 
@@ -25,9 +26,10 @@ export function useWindowManager(
   initialSize: Size
 ) {
   const dispatch = useAppDispatch();
-  const { focusedWindow, windowsOrder } = useAppSelector(
+  const { focusedWindow, windowsOrder, windows } = useAppSelector(
     (state) => state.windows
   );
+
   const isFocused = focusedWindow === windowId;
 
   const open = () => {
@@ -36,6 +38,7 @@ export function useWindowManager(
   };
 
   const close = () => {
+    dispatch(resetNavigationHistory(windowId));
     dispatch(closeWindow(windowId));
     dispatch(removeTask(windowId));
   };

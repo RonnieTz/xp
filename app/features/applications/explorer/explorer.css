@@ -1,10 +1,16 @@
 .explorer-container {
   display: flex;
   flex-direction: column;
+  height: 100%;
   /* ...existing code... */
 }
 
 .explorer-content {
   flex: 1;
   /* ...existing code... */
+}
+
+.explorer-content-wrapper {
+  flex: 1;
+  display: flex;
 }

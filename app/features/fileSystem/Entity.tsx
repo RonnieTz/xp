@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Entity } from '../fileSystem/fileSystemSlice';
+import { Entity } from '../fileSystem/fileSystemTypes';
 import { useAppSelector } from '../../hooks/reduxHooks';
 import { useEntities } from '../../hooks/useEntities';
 import styles from './Entity.module.css';
@@ -20,6 +20,7 @@ const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
   const dynamicContainerStyle: React.CSSProperties = {
     top: entity.position.y,
     left: entity.position.x,
+    position: entity.folderId === 'root' ? 'absolute' : 'initial',
   };
 
   // Compute dynamic style for image with drop-shadow following icon shape and conditional brightness

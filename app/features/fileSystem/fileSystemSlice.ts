@@ -1,100 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import foldericon from '@/public/Folder Closed.png';
-import { StaticImageData } from 'next/image';
-
-export type EntityType = 'file' | 'application' | 'shortcut' | 'folder';
-
-// Add a Position interface for drag & drop
-export interface Position {
-  x: number;
-  y: number;
-}
-
-export interface BaseEntity {
-  id: string;
-  name: string;
-  type: EntityType;
-  position: Position; // added position property for desktop dragging
-  folderId: string; // made folderId required
-  iconPath: StaticImageData; // added iconPath property for entity icon
-  // New properties to track dates
-  createdDate: string;
-  modifiedDate: string;
-}
-
-export interface FileEntity extends BaseEntity {
-  type: 'file';
-  content: string;
-  windowId: string;
-}
-
-export interface ApplicationEntity extends BaseEntity {
-  type: 'application';
-  executablePath: string;
-  windowId: string;
-}
-
-export interface ShortcutEntity extends BaseEntity {
-  type: 'shortcut';
-  targetId: string;
-  // no windowId for shortcuts
-}
-
-export interface FolderEntity extends BaseEntity {
-  type: 'folder';
-  children: Entity[];
-  windowId: string;
-}
-
-export type Entity =
-  | FileEntity
-  | ApplicationEntity
-  | ShortcutEntity
-  | FolderEntity;
-
-interface FileSystemState {
-  entities: Entity[];
-  // New state to track selected entities by their IDs
-  selectedEntityIds: string[];
-}
-
-// helper function to generate a random position between 50 and 500
-
-const initialState: FileSystemState = {
-  entities: [
-    {
-      id: '7',
-      name: 'folder1',
-      type: 'folder',
-      position: {
-        x: 0,
-        y: 0,
-      },
-      folderId: 'root',
-      iconPath: foldericon,
-      windowId: 'win-7',
-      children: [],
-      createdDate: '2023-01-01T00:00:00.000Z',
-      modifiedDate: '2023-01-01T00:00:00.000Z',
-    },
-    {
-      type: 'shortcut',
-      id: '8',
-      name: 'shortcut1',
-      position: {
-        x: 0,
-        y: 80,
-      },
-      folderId: 'root',
-      iconPath: foldericon,
-      targetId: '7',
-      createdDate: '2023-01-01T00:00:00.000Z',
-      modifiedDate: '2023-01-01T00:00:00.000Z',
-    },
-  ],
-  // Initialize selection as empty
-  selectedEntityIds: [],
-};
+import { Entity, FolderEntity, initialState } from './fileSystemTypes';
 
 const fileSystemSlice = createSlice({
   name: 'fileSystem',
@@ -137,6 +42,62 @@ const fileSystemSlice = createSlice({
         entity.position = { x, y };
       }
     },
+    // New reducer to toggle the address bar visibility
+    toggleAddressBar: (state, action: PayloadAction<string>) => {
+      const folderId = action.payload;
+      const folder = state.entities.find(
+        (e) => e.id === folderId && e.type === 'folder'
+      ) as FolderEntity | undefined;
+
+      if (folder) {
+        folder.showAddressBar = !folder.showAddressBar;
+        folder.modifiedDate = new Date().toISOString();
+      }
+    },
+    // New reducer to toggle standard buttons visibility
+    toggleStandardButtons: (state, action: PayloadAction<string>) => {
+      const folderId = action.payload;
+      const folder = state.entities.find(
+        (e) => e.id === folderId && e.type === 'folder'
+      ) as FolderEntity | undefined;
+
+      if (folder) {
+        folder.showStandardButtons = !folder.showStandardButtons;
+        folder.modifiedDate = new Date().toISOString();
+      }
+    },
+    // Toggle whether folders open in new window
+    setOpenFoldersInNewWindow: (state, action: PayloadAction<boolean>) => {
+      state.folderOptions.openFoldersInNewWindow = action.payload;
+    },
+
+    // Toggle whether to show common tasks
+    setShowCommonTasks: (state, action: PayloadAction<boolean>) => {
+      state.folderOptions.showCommonTasks = action.payload;
+    },
+
+    // Toggle both options at once (useful for resetting to defaults)
+    setFolderOptions: (
+      state,
+      action: PayloadAction<{
+        openFoldersInNewWindow: boolean;
+        showCommonTasks: boolean;
+      }>
+    ) => {
+      state.folderOptions = action.payload;
+    },
+
+    updateEntityWindowId: (
+      state,
+      action: PayloadAction<{ entityId: string; windowId: string }>
+    ) => {
+      const { entityId, windowId } = action.payload;
+      const entity = state.entities.find((e) => e.id === entityId);
+
+      if (entity && 'windowId' in entity) {
+        entity.windowId = windowId;
+      }
+    },
   },
 });
 
@@ -146,5 +107,11 @@ export const {
   setSelectedEntityIds,
   selectEntity,
   updateEntityPosition,
+  toggleAddressBar,
+  toggleStandardButtons,
+  setOpenFoldersInNewWindow,
+  setShowCommonTasks,
+  setFolderOptions,
+  updateEntityWindowId,
 } = fileSystemSlice.actions;
 export default fileSystemSlice.reducer;

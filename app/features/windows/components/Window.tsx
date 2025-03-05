@@ -80,7 +80,7 @@ const Window: React.FC<WindowProps> = ({ window }) => {
           unmaximize={unmaximize}
         />
       </div>
-      <WindowContent window={window} />
+      <WindowContent window={window} currentWidth={currentSize.width} />
       {!window.isMaximized && (
         <>
           <WindowBorders isFocused={isFocused} />
