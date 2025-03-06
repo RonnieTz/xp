@@ -24,7 +24,7 @@ const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
   };
 
   // Compute dynamic style for image with drop-shadow following icon shape and conditional brightness
-  const baseShadow = 'drop-shadow(1px 1px 1px rgba(0,0,0,0.5))';
+  const baseShadow = 'drop-shadow(1px 1px 2px rgba(0,0,0,0.2))';
   const brightness = selectedEntityIds.includes(entity.id)
     ? 'brightness(0.6) '
     : '';

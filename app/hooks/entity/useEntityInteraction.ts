@@ -21,28 +21,13 @@ export const useEntityInteraction = () => {
     if (!entity) return;
 
     if ('windowId' in entity) {
-      console.log(
-        `Double-clicking entity: ${entity.name}, id: ${entity.id}, windowId: ${entity.windowId}`
-      );
-
       // First, check if this entity's designated window is already open but showing a different folder
       const entityWindow = windows.find((w) => w.id === entity.windowId);
-      console.log(
-        `Window found? ${!!entityWindow}, isOpen: ${entityWindow?.isOpen}`
-      );
 
       if (entityWindow?.isOpen) {
-        console.log(
-          `Window current: ${entityWindow.navigationHistory.current}, Entity ID: ${entity.id}`
-        );
         if (entityWindow.navigationHistory.current !== entity.id) {
-          console.log(
-            `Window is showing a different folder than entity - creating new window`
-          );
-
           // Create a new window ID for this entity
           const newWindowId = `${entity.id}_window_${uuidv4().substring(0, 8)}`;
-          console.log(`Creating new window ID: ${newWindowId}`);
 
           // Update the entity to use the new window ID
           dispatch(
@@ -64,9 +49,6 @@ export const useEntityInteraction = () => {
           dispatch(addTask(newWindowId));
           return;
         } else {
-          console.log(
-            `Window is already showing this entity - focusing window`
-          );
           // Just focus the window if it's already showing this entity
           dispatch(
             openWindow({
@@ -86,14 +68,7 @@ export const useEntityInteraction = () => {
         const parentFolderId = entity.folderId;
         const windowShowingParent = findWindowShowingFolder(parentFolderId);
 
-        console.log(
-          `Finding window showing parent ${parentFolderId}: ${windowShowingParent}`
-        );
-
         if (windowShowingParent) {
-          console.log(
-            `Navigating to ${entity.name} in parent's window ${windowShowingParent}`
-          );
           dispatch(
             navigateToFolder({
               windowId: windowShowingParent,
@@ -113,9 +88,6 @@ export const useEntityInteraction = () => {
             ancestorFolder.id
           );
           if (windowShowingAncestor) {
-            console.log(
-              `Navigating to ${entity.name} in ancestor's window ${windowShowingAncestor}`
-            );
             dispatch(
               navigateToFolder({
                 windowId: windowShowingAncestor,
@@ -131,9 +103,6 @@ export const useEntityInteraction = () => {
       }
 
       // Default behavior - open in original window if not already open
-      console.log(
-        `Default behavior: opening entity ${entity.name} in window ${entity.windowId}`
-      );
       dispatch(
         openWindow({
           id: entity.windowId,

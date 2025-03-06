@@ -21,8 +21,6 @@ const tasksSlice = createSlice({
       }
     },
     removeTask: (state, action: PayloadAction<string>) => {
-      console.log('removeTask', action);
-
       // remove task
       state.tasks = state.tasks.filter((id) => id !== action.payload);
     },

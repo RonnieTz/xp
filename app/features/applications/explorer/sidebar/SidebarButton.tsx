@@ -40,7 +40,7 @@ const SidebarButton = ({ onClick, title, children }: SidebarButtonProps) => {
           <Image
             src={isHovered ? doubleArrowHighlighted : doubleArrow}
             style={{
-              rotate: isExpanded ? '90deg' : '-90deg',
+              rotate: isExpanded ? '-90deg' : '90deg',
               transition: 'rotate 0.3s ease',
             }}
             alt="Double arrow"
