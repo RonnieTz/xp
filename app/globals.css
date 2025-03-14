@@ -140,3 +140,13 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+
+.disabled-checkbox-container {
+  cursor: default;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.disabled-checkbox-label {
+  color: #888;
+}

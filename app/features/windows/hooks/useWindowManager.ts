@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks/reduxHooks';
 import {
   closeWindow,
@@ -8,8 +8,10 @@ import {
   maximizeWindow,
   unmaximizeWindow,
   resetNavigationHistory,
+  closeParentModals,
 } from '@/app/features/windows/windowsSlice';
 import { addTask, removeTask } from '@/app/features/tasks/tasksSlice';
+import { useModalWindow } from './useModalWindow';
 
 interface Pos {
   x: number;
@@ -29,24 +31,119 @@ export function useWindowManager(
   const { focusedWindow, windowsOrder, windows } = useAppSelector(
     (state) => state.windows
   );
+  const { hasActiveModals } = useModalWindow();
+
+  const window = windows.find((w) => w.id === windowId);
+  const isModal = window?.isModal || false;
+  const parentId = window?.parentId;
+  const hasOpenModal = window?.hasOpenModal || false;
+
+  // Get modal windows that belong to this window
+  const childModalWindows = windows.filter(
+    (w) => w.isModal && w.parentId === windowId && w.isOpen
+  );
+
+  // Get the active modal window ID (the top-most one)
+  const activeModalId =
+    childModalWindows.length > 0
+      ? childModalWindows[childModalWindows.length - 1].id
+      : null;
+
+  // Focus the active modal instead of this window
+  const focusActiveModal = useCallback(() => {
+    if (activeModalId) {
+      setTimeout(() => {
+        dispatch(focusWindow(activeModalId));
+      }, 100);
+      setTimeout(() => {
+        dispatch(focusWindow(''));
+      }, 200);
+      setTimeout(() => {
+        dispatch(focusWindow(activeModalId));
+      }, 300);
+      setTimeout(() => {
+        dispatch(focusWindow(''));
+      }, 400);
+      setTimeout(() => {
+        dispatch(focusWindow(activeModalId));
+      }, 500);
+
+      return true;
+    }
+    return false;
+  }, [dispatch, activeModalId]);
 
   const isFocused = focusedWindow === windowId;
 
   const open = () => {
     dispatch(openWindow(windowId));
-    dispatch(addTask(windowId));
+    if (!isModal) {
+      dispatch(addTask(windowId));
+    }
   };
 
   const close = () => {
+    // If this is a modal window, close it and focus the parent window
+    if (isModal && parentId) {
+      dispatch(closeWindow(windowId));
+      // Focus the parent window after closing the modal
+      setTimeout(() => {
+        dispatch(focusWindow(parentId));
+      }, 10);
+
+      return;
+    }
+
+    // If this is a regular window with modals, ask for confirmation
+    if (hasActiveModals(windowId)) {
+      // This would typically show a confirmation dialog
+      // For now, we'll just close all child modals and then the window
+      dispatch(closeParentModals(windowId));
+    }
+
     dispatch(resetNavigationHistory(windowId));
     dispatch(closeWindow(windowId));
     dispatch(removeTask(windowId));
   };
 
-  const focus = () => dispatch(focusWindow(windowId));
-  const minimize = () => dispatch(minimizeWindow(windowId));
-  const maximize = () => dispatch(maximizeWindow(windowId));
-  const unmaximize = () => dispatch(unmaximizeWindow(windowId));
+  const focus = () => {
+    // If this window has an open modal, focus that modal instead
+    if (hasOpenModal && focusActiveModal()) {
+      return;
+    }
+
+    // Only allow focusing if no parent window has an active modal
+    // If this is a modal window, it can always be focused
+    if (isModal || !parentId) {
+      dispatch(focusWindow(windowId));
+    } else {
+      const parentHasActiveModals = hasActiveModals(parentId);
+      if (!parentHasActiveModals) {
+        dispatch(focusWindow(windowId));
+      }
+    }
+  };
+
+  const minimize = () => {
+    // Modal windows cannot be minimized
+    if (!isModal) {
+      dispatch(minimizeWindow(windowId));
+    }
+  };
+
+  const maximize = () => {
+    // Modal windows cannot be maximized
+    if (!isModal) {
+      dispatch(maximizeWindow(windowId));
+    }
+  };
+
+  const unmaximize = () => {
+    // Modal windows cannot be maximized/unmaximized
+    if (!isModal) {
+      dispatch(unmaximizeWindow(windowId));
+    }
+  };
 
   const [currentPos, setCurrentPos] = useState<Pos>(initialPos);
   const [isDragging, setIsDragging] = useState(false);
@@ -57,7 +154,10 @@ export function useWindowManager(
     const dy = e.clientY - startPosRef.current.mouseY;
     const proposedY = startPosRef.current.windowY + dy;
     // Ensure newY is between 0 and parent's height - 80 (using window.innerHeight as parent's height)
-    const newY = Math.min(Math.max(proposedY, 0), window.innerHeight - 80);
+    const newY = Math.min(
+      Math.max(proposedY, 0),
+      globalThis.window.innerHeight - 80
+    );
     setCurrentPos({
       x: startPosRef.current.windowX + dx,
       y: newY,
@@ -106,6 +206,9 @@ export function useWindowManager(
   const MIN_SIZE = 400; // minimum width or height
 
   const handleResizeMouseMove = (e: MouseEvent) => {
+    // No resizing for modal windows
+    if (isModal) return;
+
     const { anchor, mouseX, mouseY, pos, size } = resizingRef.current;
     const deltaX = e.clientX - mouseX;
     const deltaY = e.clientY - mouseY;
@@ -195,5 +298,8 @@ export function useWindowManager(
     windowsOrder,
     maximize,
     unmaximize,
+    hasOpenModal,
+    focusActiveModal,
+    activeModalId,
   };
 }

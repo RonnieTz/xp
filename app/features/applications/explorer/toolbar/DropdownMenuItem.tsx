@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Image, { StaticImageData } from 'next/image';
 import ExpandMenu from './ExpandMenu';
-import MenuItem from './MenuItem';
+import { MenuItem } from './hooks/useExplorerMenuItems';
 
 interface DropdownMenuItemProps {
   label?: string;

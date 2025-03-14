@@ -1,0 +1,43 @@
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px;
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+}
+
+.xp-button {
+  border: 1px solid #003c74;
+  border-radius: 2px;
+  background: linear-gradient(white 50%, #f0f0ea 90%, #d6d0c5);
+  color: #000;
+  padding: 2px 6px;
+  font-size: 12px;
+  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.5);
+  min-width: 70px;
+}
+
+.xp-button:hover:not(.disabled) {
+  box-shadow: 0 -0.5px 2px 0 #e59700 inset;
+}
+
+.xp-button:active:not(.disabled) {
+  background: linear-gradient(#d1ccc1 5%, #f2f1ee, #e2e2da 90%);
+  box-shadow: none;
+}
+
+.ok-button {
+  box-shadow: 0 -0.5px 1px 1px rgba(0, 120, 215, 0.4) inset;
+}
+
+.apply-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.apply-button:disabled:hover {
+  box-shadow: none;
+  background: linear-gradient(white 50%, #f0f0ea 90%, #d6d0c5);
+}

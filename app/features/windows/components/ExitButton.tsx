@@ -5,11 +5,17 @@ import closeIcon from '@/public/Exit.png';
 interface ExitButtonProps {
   buttonStyle: React.CSSProperties;
   close: () => void;
+  isModal: boolean;
 }
 
-const ExitButton: React.FC<ExitButtonProps> = ({ buttonStyle, close }) => {
+const ExitButton: React.FC<ExitButtonProps> = ({
+  buttonStyle,
+  close,
+  isModal,
+}) => {
   return (
     <div
+      style={{ position: isModal ? 'absolute' : undefined, top: 0, right: 0 }}
       className="exit-button"
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => {

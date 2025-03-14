@@ -22,6 +22,11 @@
   border: 1px dotted #ce953a;
 }
 
+.titleSelectedHovered {
+  background-color: #000080; /* Navy blue background */
+  color: white;
+}
+
 .titleRoot {
   color: white;
   text-shadow: 1px 1px 2px black;
@@ -45,4 +50,11 @@
   border-left: 1px solid #808080;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
+}
+
+.titleUnderlined {
+  /* text-shadow: 0px 1px 2px black; */
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
 }

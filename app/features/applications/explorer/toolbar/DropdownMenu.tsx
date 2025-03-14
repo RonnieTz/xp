@@ -39,7 +39,10 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
             hasTick={item.hasTick}
             hasSubmenu={item.hasSubmenu}
             shortcut={item.shortcut}
-            onClick={() => handleItemClick(item.label)}
+            onClick={() => {
+              handleItemClick(item.label);
+              item.onClick && item.onClick();
+            }}
             expandItems={item.expandItems}
             hasPadding={hasIcon}
           />

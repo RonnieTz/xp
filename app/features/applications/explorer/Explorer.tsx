@@ -25,6 +25,9 @@ const Explorer = ({
   const window = useAppSelector((state) =>
     state.windows.windows.find((win) => win.id === windowId)
   );
+  const folderOptions = useAppSelector(
+    (state) => state.fileSystem.folderOptions
+  );
 
   // Use the current folder ID from navigation history, or fall back to the initial prop
   const currentFolderId = window?.navigationHistory?.current || initialFolderId;
@@ -41,7 +44,7 @@ const Explorer = ({
           )}
           {folder.showAddressBar && <AddressBar folderId={currentFolderId} />}
           <div className="explorer-content-wrapper">
-            {width > 500 && <Sidebar />}
+            {width > 500 && folderOptions.showCommonTasks && <Sidebar />}
             <Content folderId={currentFolderId} />
           </div>
         </>

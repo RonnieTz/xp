@@ -4,6 +4,12 @@ import internetExplorerIcon from '@/public/Internet Explorer.png';
 import documentIcon from '@/public/Generic Text Document.png';
 import { useEntities } from '@/app/hooks/useEntities';
 import type { FolderEntity } from '@/app/features/fileSystem/fileSystemTypes';
+import { useAppDispatch, useAppSelector } from '@/app/hooks/reduxHooks';
+import {
+  openWindow,
+  setHasOpenModal,
+} from '@/app/features/windows/windowsSlice';
+import { v4 as uuidv4 } from 'uuid';
 
 // Define interface for menu items
 export interface MenuItem {
@@ -29,9 +35,40 @@ export type MenuName =
   | 'Help';
 
 export const useExplorerMenuItems = (id: string) => {
+  const dispatch = useAppDispatch();
+  const { windows } = useAppSelector((state) => state.windows);
+  const window = windows.find((window) => window.entityId === id);
   const { entities, toggleEntityAddressBar, toggleEntityStandardButtons } =
     useEntities();
   const folder = entities.find((entity) => entity.id === id) as FolderEntity;
+
+  const openFolderOptionsModal = () => {
+    const modalId = `FolderOptionsWindow-${uuidv4()}`;
+
+    // Safely access window properties with fallbacks
+    const windowId = window?.id ?? id;
+    const windowPosition = {
+      x: (window?.position?.x ?? 100) + 50,
+      y: (window?.position?.y ?? 100) + 50,
+    };
+
+    // Set the parent window as having an open modal
+    dispatch(setHasOpenModal({ id: windowId, hasOpenModal: true }));
+
+    // Open the folder options modal window with the parent ID
+    dispatch(
+      openWindow({
+        id: modalId,
+        title: 'Folder Options',
+        iconPath: window?.iconPath,
+        isModal: true,
+        parentId: windowId,
+        size: { width: 450, height: 550 },
+        position: windowPosition,
+      })
+    );
+  };
+
   // Menu items for each dropdown with optional icons
   const menuItems: Record<MenuName, MenuItem[]> = {
     File: [
@@ -147,7 +184,10 @@ export const useExplorerMenuItems = (id: string) => {
       { label: 'Disconnect Network Drive...' },
       { label: 'Synchronize...' },
       { isDivider: true },
-      { label: 'Folder Options...' },
+      {
+        label: 'Folder Options...',
+        onClick: openFolderOptionsModal,
+      },
     ],
     Help: [
       { label: 'Help And Support Center' },

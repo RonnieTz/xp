@@ -1,9 +1,10 @@
-import Image from 'next/image';
 import { Entity } from '../fileSystem/fileSystemTypes';
 import { useAppSelector } from '../../hooks/reduxHooks';
 import { useEntities } from '../../hooks/useEntities';
 import styles from './Entity.module.css';
 import EntityIcons from './EntityIcons';
+import { useHoverSelection } from '@/app/hooks/useHoverSelection';
+import { useEntityStyles } from '@/app/hooks/useEntityStyles';
 
 interface EntityProps {
   entity: Entity;
@@ -13,55 +14,58 @@ const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
   const selectedEntityIds = useAppSelector(
     (state) => state.fileSystem.selectedEntityIds
   );
+  const { folderOptions } = useAppSelector((state) => state.fileSystem);
+  const { isSingleClick } = folderOptions;
+  const isSelected = selectedEntityIds.includes(entity.id);
   const { selectEntity, handleDragStart, handleDoubleClickEntity } =
     useEntities();
 
-  // Compute dynamic style for positioning
-  const dynamicContainerStyle: React.CSSProperties = {
-    top: entity.position.y,
-    left: entity.position.x,
-    position: entity.folderId === 'root' ? 'absolute' : 'initial',
+  // Use custom hooks
+  const { isHovered, handleMouseEnter, handleMouseLeave } = useHoverSelection(
+    entity,
+    selectEntity
+  );
+  const { containerStyle, imageStyle, titleClass } = useEntityStyles(
+    entity,
+    isSelected,
+    isHovered
+  );
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (isSingleClick) {
+      setTimeout(() => {
+        handleDoubleClickEntity(
+          entity.type === 'shortcut' ? entity.targetId : entity.id
+        );
+      }, 600);
+    } else {
+      selectEntity(entity.id, e.ctrlKey);
+    }
   };
 
-  // Compute dynamic style for image with drop-shadow following icon shape and conditional brightness
-  const baseShadow = 'drop-shadow(1px 1px 2px rgba(0,0,0,0.2))';
-  const brightness = selectedEntityIds.includes(entity.id)
-    ? 'brightness(0.6) '
-    : '';
-  const dynamicImageStyle: React.CSSProperties = {
-    filter: brightness + baseShadow,
+  const handleDoubleClick = () => {
+    handleDoubleClickEntity(
+      entity.type === 'shortcut' ? entity.targetId : entity.id
+    );
   };
-
-  // Compute title classname based on conditions
-  let titleClass = styles.title;
-  if (selectedEntityIds.includes(entity.id)) {
-    titleClass += ' ' + styles.titleSelected;
-  } else if (entity.folderId === 'root') {
-    titleClass += ' ' + styles.titleRoot;
-  } else {
-    titleClass += ' ' + styles.titleDefault;
-  }
 
   return (
     <div
       className={styles.entityContainer}
       data-entity-id={entity.id}
-      style={dynamicContainerStyle}
+      style={containerStyle}
       onDrop={(e) => e.stopPropagation()}
-      onClick={(e) => {
-        e.stopPropagation();
-        selectEntity(entity.id, e.ctrlKey);
-      }}
-      onDoubleClick={() => {
-        handleDoubleClickEntity(
-          entity.type === 'shortcut' ? entity.targetId : entity.id
-        );
-      }}
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <EntityIcons
         iconPath={entity.iconPath}
         alt={`${entity.name} icon`}
-        dynamicImageStyle={dynamicImageStyle}
+        dynamicImageStyle={imageStyle}
         onDragStart={(e) => handleDragStart(e, entity.id)}
         isShortcut={entity.type === 'shortcut'}
       />

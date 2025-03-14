@@ -11,33 +11,35 @@ export interface Position {
   y: number;
 }
 
-// Add navigation history to the WindowEntity interface
+export interface NavigationHistory {
+  past: string[];
+  current: string;
+  future: string[];
+}
 
 export interface WindowEntity {
   id: string;
   title: string;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
   isOpen: boolean;
   isMinimized: boolean;
   isMaximized: boolean;
+  isModal?: boolean; // New flag for modal windows
+  parentId?: string; // Reference to parent window id if it's a modal
+  hasOpenModal?: boolean; // Flag to indicate if this window has an open modal
   iconPath: StaticImageData;
   entityId: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  // Navigation history for folder windows
-  navigationHistory: {
-    past: string[]; // IDs of previously viewed folders
-    current: string; // ID of the currently displayed folder
-    future: string[]; // IDs of folders visited with forward button
-  };
+  navigationHistory: NavigationHistory;
 }
 
-export interface WindowsState {
+export interface WindowState {
   windows: WindowEntity[];
   focusedWindow: string | null;
-  windowsOrder: string[];
+  windowsOrder: string[]; // To track z-index ordering
 }
 
-export const initialState: WindowsState = {
+export const initialState: WindowState = {
   windows: [
     {
       id: 'folder1Window',
@@ -46,6 +48,7 @@ export const initialState: WindowsState = {
       position: { x: 610, y: 110 },
       isMinimized: false,
       isOpen: false,
+      hasOpenModal: false,
       iconPath: folderIcon,
       entityId: '1',
       isMaximized: false,
@@ -102,6 +105,24 @@ export const initialState: WindowsState = {
         current: '4',
         future: [],
       },
+    },
+    {
+      id: 'FolderOptionsWindow',
+      title: 'Options',
+      size: { width: 400, height: 300 },
+      position: { x: 100, y: 100 },
+      isMinimized: false,
+      isOpen: false,
+      iconPath: folderIcon,
+      entityId: '100',
+      isMaximized: false,
+      navigationHistory: {
+        past: [],
+        current: '100',
+        future: [],
+      },
+      isModal: true,
+      parentId: 'folder1Window',
     },
   ],
   focusedWindow: null,

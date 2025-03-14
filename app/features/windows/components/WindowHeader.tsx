@@ -16,6 +16,7 @@ interface WindowHeaderProps {
   minimize: () => void;
   maximize: () => void;
   unmaximize: () => void;
+  isModal: boolean;
 }
 
 const WindowHeader: React.FC<WindowHeaderProps> = ({
@@ -25,10 +26,10 @@ const WindowHeader: React.FC<WindowHeaderProps> = ({
   minimize,
   maximize,
   unmaximize,
+  isModal,
 }) => {
-  const { iconPath, isMaximized, entityId } = window;
+  const { iconPath, isMaximized } = window;
   const { entities } = useEntities();
-  const entity = entities.find((e) => e.id === entityId);
   const buttonStyle = {
     height: '100%',
     width: 'auto',
@@ -65,14 +66,18 @@ const WindowHeader: React.FC<WindowHeaderProps> = ({
         <div style={{ translate: '-2px 2px' }}>{displayTitle}</div>
       </span>
       <div className="window-header-controls">
-        <MinimizeButton buttonStyle={buttonStyle} minimize={minimize} />
-        <MaximizeButton
-          buttonStyle={buttonStyle}
-          isMaximized={isMaximized}
-          maximize={maximize}
-          unmaximize={unmaximize}
-        />
-        <ExitButton buttonStyle={buttonStyle} close={close} />
+        {!isModal && (
+          <>
+            <MinimizeButton buttonStyle={buttonStyle} minimize={minimize} />
+            <MaximizeButton
+              buttonStyle={buttonStyle}
+              isMaximized={isMaximized}
+              maximize={maximize}
+              unmaximize={unmaximize}
+            />
+          </>
+        )}
+        <ExitButton isModal={isModal} buttonStyle={buttonStyle} close={close} />
       </div>
     </div>
   );

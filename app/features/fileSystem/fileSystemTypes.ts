@@ -57,8 +57,10 @@ export interface FileSystemState {
   entities: Entity[];
   selectedEntityIds: string[];
   folderOptions: {
-    openFoldersInNewWindow: boolean;
+    openInSameWindow: boolean;
     showCommonTasks: boolean;
+    isSingleClick: boolean;
+    underlineOption: 'browser' | 'hover';
   };
 }
 
@@ -149,7 +151,9 @@ export const initialState: FileSystemState = {
   ],
   selectedEntityIds: [],
   folderOptions: {
-    openFoldersInNewWindow: false,
+    openInSameWindow: true,
     showCommonTasks: true,
+    isSingleClick: false,
+    underlineOption: 'browser',
   },
 };

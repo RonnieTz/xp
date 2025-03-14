@@ -11,12 +11,28 @@ interface OpenWindowPayload {
   isMaximized?: boolean;
   entityId?: string; // Add entityId to track which folder is being displayed
   iconPath?: StaticImageData;
+  isModal?: boolean; // New prop for modal windows
+  parentId?: string; // Parent window ID for modals
 }
 
 interface NavigateToFolderPayload {
   windowId: string;
   folderId: string;
   folderName: string;
+}
+
+interface OpenModalPayload {
+  id: string;
+  parentId: string;
+  title: string;
+  size?: { width: number; height: number };
+  iconPath: StaticImageData;
+  entityId?: string;
+}
+
+interface SetHasOpenModalPayload {
+  id: string;
+  hasOpenModal: boolean;
 }
 
 const windowsSlice = createSlice({
@@ -102,6 +118,14 @@ const windowsSlice = createSlice({
               ? action.payload.isMaximized
               : win.isMaximized;
 
+          // Set modal properties if provided
+          if (action.payload.isModal !== undefined) {
+            win.isModal = action.payload.isModal;
+          }
+          if (action.payload.parentId) {
+            win.parentId = action.payload.parentId;
+          }
+
           // If an entityId was provided, add it to navigation history
           if (
             action.payload.entityId &&
@@ -130,6 +154,8 @@ const windowsSlice = createSlice({
             isOpen: true,
             isMinimized: action.payload.isMinimized || false,
             isMaximized: action.payload.isMaximized || false,
+            isModal: action.payload.isModal || false,
+            parentId: action.payload.parentId,
             iconPath: action.payload.iconPath!,
             entityId: action.payload.entityId || '',
             navigationHistory: {
@@ -155,6 +181,37 @@ const windowsSlice = createSlice({
       const win = state.windows.find((win) => win.id === action.payload);
       if (win) {
         win.isOpen = false;
+
+        // If this was a modal, update parent's hasOpenModal status
+        if (win.isModal && win.parentId) {
+          const parentWindow = state.windows.find((w) => w.id === win.parentId);
+          if (parentWindow) {
+            // Check if there are any other open modals for this parent
+            const hasOtherOpenModals = state.windows.some(
+              (w) =>
+                w.id !== win.id &&
+                w.isModal === true &&
+                w.parentId === win.parentId &&
+                w.isOpen === true
+            );
+
+            parentWindow.hasOpenModal = hasOtherOpenModals;
+          }
+        }
+
+        // Update focus if this was the focused window
+        if (state.focusedWindow === win.id) {
+          // Find the next window to focus based on z-index order
+          const index = state.windowsOrder.indexOf(win.id);
+          if (index > 0) {
+            state.focusedWindow = state.windowsOrder[index - 1];
+          } else {
+            state.focusedWindow = null;
+          }
+        }
+
+        // Remove from windows order
+        state.windowsOrder = state.windowsOrder.filter((id) => id !== win.id);
       }
     },
     unfocusWindow(state) {
@@ -253,6 +310,102 @@ const windowsSlice = createSlice({
         };
       }
     },
+    // New reducer to open a modal window
+    openModal: {
+      reducer(state, action: PayloadAction<OpenModalPayload>) {
+        const { id, parentId, title, size, iconPath, entityId } =
+          action.payload;
+
+        // Calculate position to center the modal over parent
+        const parentWindow = state.windows.find((w) => w.id === parentId);
+        let position = { x: 100, y: 100 };
+
+        if (parentWindow) {
+          const modalSize = size || { width: 400, height: 250 };
+          position = {
+            x:
+              parentWindow.position.x +
+              (parentWindow.size.width - modalSize.width) / 2,
+            y:
+              parentWindow.position.y +
+              (parentWindow.size.height - modalSize.height) / 2,
+          };
+        }
+
+        const existingModal = state.windows.find((win) => win.id === id);
+
+        if (existingModal) {
+          // Update existing modal window
+          existingModal.isOpen = true;
+          existingModal.isMinimized = false;
+          existingModal.parentId = parentId;
+          existingModal.position = position;
+          if (size) existingModal.size = size;
+          if (title) existingModal.title = title;
+
+          // Focus the modal
+          state.focusedWindow = id;
+          state.windowsOrder = state.windowsOrder.filter((wid) => wid !== id);
+          state.windowsOrder.push(id);
+        } else {
+          // Create a new modal window
+          const newModal: WindowEntity = {
+            id,
+            title,
+            position,
+            size: size || { width: 400, height: 250 },
+            isOpen: true,
+            isMinimized: false,
+            isMaximized: false,
+            isModal: true,
+            parentId,
+            iconPath: iconPath,
+            entityId: entityId || '',
+            navigationHistory: {
+              past: [],
+              current: entityId || '',
+              future: [],
+            },
+          };
+
+          state.windows.push(newModal);
+          state.focusedWindow = id;
+          state.windowsOrder.push(id);
+        }
+      },
+      prepare(payload: OpenModalPayload) {
+        return { payload };
+      },
+    },
+
+    // New reducer to close all modals associated with a parent window
+    closeParentModals(state, action: PayloadAction<string>) {
+      const parentId = action.payload;
+      const modals = state.windows.filter(
+        (w) => w.isModal && w.parentId === parentId
+      );
+
+      modals.forEach((modal) => {
+        modal.isOpen = false;
+      });
+
+      // Refocus the parent window if it was a modal that was focused
+      if (
+        state.focusedWindow &&
+        modals.some((m) => m.id === state.focusedWindow)
+      ) {
+        state.focusedWindow = parentId;
+      }
+    },
+
+    setHasOpenModal: (state, action: PayloadAction<SetHasOpenModalPayload>) => {
+      const { id, hasOpenModal } = action.payload;
+      const windowIndex = state.windows.findIndex((window) => window.id === id);
+
+      if (windowIndex !== -1) {
+        state.windows[windowIndex].hasOpenModal = hasOpenModal;
+      }
+    },
   },
 });
 
@@ -273,5 +426,8 @@ export const {
   navigateBack,
   navigateForward,
   resetNavigationHistory,
+  openModal,
+  closeParentModals,
+  setHasOpenModal, // Export the new action
 } = windowsSlice.actions;
 export default windowsSlice.reducer;

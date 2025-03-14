@@ -14,9 +14,17 @@ interface ResizeAnchorProps {
       | 'bottom-right',
     e: React.MouseEvent
   ) => void;
+  disabled?: boolean;
 }
 
-const ResizeAnchors = ({ handleAnchorMouseDown }: ResizeAnchorProps) => {
+const ResizeAnchors: React.FC<ResizeAnchorProps> = ({
+  handleAnchorMouseDown,
+  disabled = false,
+}) => {
+  if (disabled) {
+    return null; // Don't render anchors when disabled
+  }
+
   return (
     <>
       <ResizeAnchor

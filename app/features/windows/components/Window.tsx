@@ -49,11 +49,25 @@ const Window: React.FC<WindowProps> = ({ window }) => {
     style.height = '100%';
   }
 
+  const disableInteractions = (e: any) => {
+    if (window.hasOpenModal) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+  };
+
   return (
     <div
       className="window-container"
       onDrop={(e) => e.stopPropagation()}
       style={style}
+      onDoubleClickCapture={disableInteractions}
+      onClickCapture={(e) => {
+        focus();
+        disableInteractions(e);
+      }}
+      onContextMenuCapture={disableInteractions}
       onClick={(e) => {
         e.stopPropagation();
         focus();
@@ -67,11 +81,12 @@ const Window: React.FC<WindowProps> = ({ window }) => {
     >
       <div
         onMouseDown={(e) => {
-          if (window.isMaximized) return;
           handleMouseDown(e);
+          if (window.isMaximized) return;
         }}
       >
         <WindowHeader
+          isModal={window.isModal || false}
           window={window}
           isFocused={isFocused}
           close={close}

@@ -1,8 +1,6 @@
 import { useAppDispatch, useAppSelector } from './reduxHooks';
-import {
-  Entity,
-  setSelectedEntityIds,
-} from '../features/fileSystem/fileSystemSlice';
+import { setSelectedEntityIds } from '../features/fileSystem/fileSystemSlice';
+import { Entity } from '../features/fileSystem/fileSystemTypes';
 
 export const useArrowSelection = () => {
   const dispatch = useAppDispatch();

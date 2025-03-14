@@ -7,9 +7,11 @@ import { addTask } from '@/app/features/tasks/tasksSlice';
 import { useEntityUtils } from './useEntityUtils';
 import { useFolderOptions } from './useFolderOptions';
 import { updateEntityWindowId } from '@/app/features/fileSystem/fileSystemSlice';
+import { useEntitySelection } from './useEntitySelection';
 import { v4 as uuidv4 } from 'uuid';
 
 export const useEntityInteraction = () => {
+  const { clearSelections } = useEntitySelection();
   const dispatch = useAppDispatch();
   const { entities, findEntityById, findWindowShowingFolder } =
     useEntityUtils();
@@ -17,6 +19,7 @@ export const useEntityInteraction = () => {
   const windows = useAppSelector((state) => state.windows.windows);
 
   const handleDoubleClickEntity = (id: string) => {
+    dispatch(clearSelections());
     const entity = entities.find((ent) => ent.id === id);
     if (!entity) return;
 
@@ -63,7 +66,7 @@ export const useEntityInteraction = () => {
       }
 
       // If we're not opening in new windows and this is a folder
-      if (entity.type === 'folder' && !folderOptions.openFoldersInNewWindow) {
+      if (entity.type === 'folder' && folderOptions.openInSameWindow) {
         // Try to handle navigation in an existing window
         const parentFolderId = entity.folderId;
         const windowShowingParent = findWindowShowingFolder(parentFolderId);

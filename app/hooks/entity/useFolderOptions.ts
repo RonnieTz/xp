@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from '../reduxHooks';
 import {
   toggleAddressBar,
   toggleStandardButtons,
-  setOpenFoldersInNewWindow,
+  setOpenInNewWindow,
   setShowCommonTasks,
   setFolderOptions,
 } from '@/app/features/fileSystem/fileSystemSlice';
@@ -22,7 +22,7 @@ export const useFolderOptions = () => {
   };
 
   const toggleOpenFoldersInNewWindow = (value: boolean) => {
-    dispatch(setOpenFoldersInNewWindow(value));
+    dispatch(setOpenInNewWindow(value));
   };
 
   const toggleShowCommonTasks = (value: boolean) => {
@@ -30,8 +30,10 @@ export const useFolderOptions = () => {
   };
 
   const updateFolderOptions = (options: {
-    openFoldersInNewWindow: boolean;
+    openInSameWindow: boolean;
     showCommonTasks: boolean;
+    isSingleClick: boolean;
+    underlineOption: 'browser' | 'hover';
   }) => {
     dispatch(setFolderOptions(options));
   };

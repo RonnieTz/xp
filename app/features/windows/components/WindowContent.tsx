@@ -2,6 +2,7 @@ import React from 'react';
 import { WindowEntity } from '../windowsState';
 import { useAppSelector } from '@/app/hooks/reduxHooks';
 import Explorer from '../../applications/explorer/Explorer';
+import FolderOptions from '../../applications/explorer/folderOptions/FolderOptions';
 
 interface WindowContentProps {
   window: WindowEntity;
@@ -31,13 +32,16 @@ const WindowContent: React.FC<WindowContentProps> = ({
         left: isMaximized ? 0 : undefined,
       }}
     >
-      {entity?.type === 'folder' ? (
+      {entity?.type === 'folder' && (
         <Explorer
           folderId={entity.id}
           width={currentWidth}
           windowId={window.id} // Pass the window ID to Explorer
         />
-      ) : null}
+      )}
+      {window.id.includes('FolderOptionsWindow') && (
+        <FolderOptions windowId={window.id} />
+      )}
     </div>
   );
 };

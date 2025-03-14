@@ -67,8 +67,8 @@ const fileSystemSlice = createSlice({
       }
     },
     // Toggle whether folders open in new window
-    setOpenFoldersInNewWindow: (state, action: PayloadAction<boolean>) => {
-      state.folderOptions.openFoldersInNewWindow = action.payload;
+    setOpenInNewWindow: (state, action: PayloadAction<boolean>) => {
+      state.folderOptions.openInSameWindow = action.payload;
     },
 
     // Toggle whether to show common tasks
@@ -76,12 +76,24 @@ const fileSystemSlice = createSlice({
       state.folderOptions.showCommonTasks = action.payload;
     },
 
+    // Toggle single-click or double-click opening mode
+    setIsSingleClick: (state, action: PayloadAction<boolean>) => {
+      state.folderOptions.isSingleClick = action.payload;
+    },
+
+    // Set underline option ('browser' or 'hover')
+    setUnderlineOption: (state, action: PayloadAction<'browser' | 'hover'>) => {
+      state.folderOptions.underlineOption = action.payload;
+    },
+
     // Toggle both options at once (useful for resetting to defaults)
     setFolderOptions: (
       state,
       action: PayloadAction<{
-        openFoldersInNewWindow: boolean;
+        openInSameWindow: boolean;
         showCommonTasks: boolean;
+        isSingleClick: boolean;
+        underlineOption: 'browser' | 'hover';
       }>
     ) => {
       state.folderOptions = action.payload;
@@ -109,8 +121,10 @@ export const {
   updateEntityPosition,
   toggleAddressBar,
   toggleStandardButtons,
-  setOpenFoldersInNewWindow,
+  setOpenInNewWindow,
   setShowCommonTasks,
+  setIsSingleClick,
+  setUnderlineOption,
   setFolderOptions,
   updateEntityWindowId,
 } = fileSystemSlice.actions;
