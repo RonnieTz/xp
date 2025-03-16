@@ -8,9 +8,9 @@ interface ContentProps {
 }
 
 const Content = ({ folderId }: ContentProps) => {
-  const { entities } = useEntities();
+  const { entities, clearSelections } = useEntities();
   return (
-    <div className="content-container">
+    <div onClick={clearSelections} className="content-container">
       {entities.map((entity) => (
         <Fragment key={entity.id}>
           {entity.folderId === folderId && <EntityComponent entity={entity} />}

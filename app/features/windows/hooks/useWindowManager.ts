@@ -12,6 +12,7 @@ import {
 } from '@/app/features/windows/windowsSlice';
 import { addTask, removeTask } from '@/app/features/tasks/tasksSlice';
 import { useModalWindow } from './useModalWindow';
+import { useWindowFocus } from './useWindowFocus';
 
 interface Pos {
   x: number;
@@ -27,6 +28,7 @@ export function useWindowManager(
   initialPos: Pos,
   initialSize: Size
 ) {
+  const { focus } = useWindowFocus(windowId);
   const dispatch = useAppDispatch();
   const { focusedWindow, windowsOrder, windows } = useAppSelector(
     (state) => state.windows
@@ -104,24 +106,6 @@ export function useWindowManager(
     dispatch(resetNavigationHistory(windowId));
     dispatch(closeWindow(windowId));
     dispatch(removeTask(windowId));
-  };
-
-  const focus = () => {
-    // If this window has an open modal, focus that modal instead
-    if (hasOpenModal && focusActiveModal()) {
-      return;
-    }
-
-    // Only allow focusing if no parent window has an active modal
-    // If this is a modal window, it can always be focused
-    if (isModal || !parentId) {
-      dispatch(focusWindow(windowId));
-    } else {
-      const parentHasActiveModals = hasActiveModals(parentId);
-      if (!parentHasActiveModals) {
-        dispatch(focusWindow(windowId));
-      }
-    }
   };
 
   const minimize = () => {
@@ -214,7 +198,7 @@ export function useWindowManager(
     const deltaY = e.clientY - mouseY;
     let newPos = { ...pos };
     let newSize = { ...size };
-    focus();
+    focus(windowId);
 
     if (anchor.includes('top')) {
       let effectiveDeltaY = deltaY;
@@ -287,7 +271,7 @@ export function useWindowManager(
   return {
     open,
     close,
-    focus,
+    focus: () => focus(windowId),
     isFocused,
     currentPos,
     currentSize,

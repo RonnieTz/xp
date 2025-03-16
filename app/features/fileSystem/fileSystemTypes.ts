@@ -19,6 +19,7 @@ export interface BaseEntity {
   // New properties to track dates
   createdDate: string;
   modifiedDate: string;
+  isRenaming: boolean; // added isRenaming property for rename mode
 }
 
 export interface FileEntity extends BaseEntity {
@@ -82,6 +83,7 @@ export const initialState: FileSystemState = {
       modifiedDate: '2023-01-01T00:00:00.000Z',
       showAddressBar: true,
       showStandardButtons: true,
+      isRenaming: false,
     },
     {
       id: '2',
@@ -99,6 +101,7 @@ export const initialState: FileSystemState = {
       modifiedDate: '2023-01-01T00:00:00.000Z',
       showAddressBar: true,
       showStandardButtons: true,
+      isRenaming: false,
     },
     {
       id: '3',
@@ -116,6 +119,7 @@ export const initialState: FileSystemState = {
       modifiedDate: '2023-01-01T00:00:00.000Z',
       showAddressBar: true,
       showStandardButtons: true,
+      isRenaming: false,
     },
     {
       id: '4',
@@ -133,6 +137,7 @@ export const initialState: FileSystemState = {
       modifiedDate: '2023-01-01T00:00:00.000Z',
       showAddressBar: true,
       showStandardButtons: true,
+      isRenaming: false,
     },
     {
       type: 'shortcut',
@@ -147,6 +152,7 @@ export const initialState: FileSystemState = {
       targetId: '1',
       createdDate: '2023-01-01T00:00:00.000Z',
       modifiedDate: '2023-01-01T00:00:00.000Z',
+      isRenaming: false,
     },
   ],
   selectedEntityIds: [],

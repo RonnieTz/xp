@@ -44,7 +44,9 @@ const Explorer = ({
           )}
           {folder.showAddressBar && <AddressBar folderId={currentFolderId} />}
           <div className="explorer-content-wrapper">
-            {width > 500 && folderOptions.showCommonTasks && <Sidebar />}
+            {width > 500 && folderOptions.showCommonTasks && (
+              <Sidebar folderId={currentFolderId} />
+            )}
             <Content folderId={currentFolderId} />
           </div>
         </>

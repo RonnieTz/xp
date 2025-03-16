@@ -63,6 +63,7 @@ const FolderOptions = ({ windowId }: FolderOptionsProps) => {
         onOk={actions.handleOK}
         onCancel={actions.handleCancel}
         onApply={actions.handleApply}
+        disableApply={state.disableApply}
       />
     </div>
   );

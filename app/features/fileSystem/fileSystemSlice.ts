@@ -13,6 +13,17 @@ const fileSystemSlice = createSlice({
         (entity) => entity.id !== action.payload
       );
     },
+    setIsRenaming(
+      state,
+      action: PayloadAction<{ id: string; isRenaming: boolean }>
+    ) {
+      const { id, isRenaming } = action.payload;
+      const entity = state.entities.find((e) => e.id === id);
+
+      if (entity) {
+        entity.isRenaming = isRenaming;
+      }
+    },
     setSelectedEntityIds(state, action: PayloadAction<string[]>) {
       state.selectedEntityIds = action.payload;
     },
@@ -110,6 +121,28 @@ const fileSystemSlice = createSlice({
         entity.windowId = windowId;
       }
     },
+
+    // New reducer to rename an entity
+    renameEntity: (
+      state,
+      action: PayloadAction<{ id: string; newName: string }>
+    ) => {
+      const { id, newName } = action.payload;
+      const entity = state.entities.find((e) => e.id === id);
+
+      if (entity) {
+        // Check if there's another entity with the same name in the same folder
+        const hasDuplicate = state.entities.some(
+          (e) =>
+            e.id !== id && e.name === newName && e.folderId === entity.folderId
+        );
+
+        if (!hasDuplicate && newName.trim() !== '') {
+          entity.name = newName;
+          entity.modifiedDate = new Date().toISOString();
+        }
+      }
+    },
   },
 });
 
@@ -127,5 +160,7 @@ export const {
   setUnderlineOption,
   setFolderOptions,
   updateEntityWindowId,
+  renameEntity, // Export the new action
+  setIsRenaming,
 } = fileSystemSlice.actions;
 export default fileSystemSlice.reducer;

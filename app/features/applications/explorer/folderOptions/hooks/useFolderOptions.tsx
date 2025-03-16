@@ -15,6 +15,7 @@ export interface GeneralTabState {
 export interface FolderOptionsState {
   activeTab: TabName;
   generalTab: GeneralTabState;
+  disableApply: boolean;
 }
 
 export interface FolderOptionsActions {
@@ -55,6 +56,13 @@ export const useFolderOptions = (windowId: string): UseFolderOptionsReturn => {
   const [underlineOption, setUnderlineOption] = useState<'browser' | 'hover'>(
     folderOptions.underlineOption
   );
+
+  // Calculate if any changes have been made compared to saved state
+  const disableApply =
+    openInSameWindow === folderOptions.openInSameWindow &&
+    showCommonTasks === folderOptions.showCommonTasks &&
+    isSingleClick === folderOptions.isSingleClick &&
+    underlineOption === folderOptions.underlineOption;
 
   // Dialog button handlers
   const handleOK = () => {
@@ -99,6 +107,7 @@ export const useFolderOptions = (windowId: string): UseFolderOptionsReturn => {
       isSingleClick,
       underlineOption,
     },
+    disableApply,
   };
 
   const actions: FolderOptionsActions = {

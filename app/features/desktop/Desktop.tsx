@@ -31,6 +31,8 @@ export default function Desktop() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
+      console.log('Enter key pressed desktop');
+
       handleEnter();
     } else if (
       e.key === 'ArrowUp' ||

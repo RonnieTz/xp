@@ -5,6 +5,8 @@ import styles from './Entity.module.css';
 import EntityIcons from './EntityIcons';
 import { useHoverSelection } from '@/app/hooks/useHoverSelection';
 import { useEntityStyles } from '@/app/hooks/useEntityStyles';
+import { useEntityRename } from '@/app/hooks/useEntityRename';
+import { useState, useRef } from 'react';
 
 interface EntityProps {
   entity: Entity;
@@ -17,8 +19,12 @@ const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
   const { folderOptions } = useAppSelector((state) => state.fileSystem);
   const { isSingleClick } = folderOptions;
   const isSelected = selectedEntityIds.includes(entity.id);
-  const { selectEntity, handleDragStart, handleDoubleClickEntity } =
-    useEntities();
+  const {
+    selectEntity,
+    handleDragStart,
+    handleDoubleClickEntity,
+    handleRenameEntity,
+  } = useEntities();
 
   // Use custom hooks
   const { isHovered, handleMouseEnter, handleMouseLeave } = useHoverSelection(
@@ -31,24 +37,92 @@ const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
     isHovered
   );
 
-  const handleClick = (e: React.MouseEvent) => {
+  // Add rename functionality
+  const {
+    isRenaming,
+    tempName,
+    inputRef,
+    startRename,
+    handleRenameChange,
+    handleRenameBlur,
+    handleRenameKeyDown,
+  } = useEntityRename(entity.id, entity.name);
+
+  // Add state to track clicks for title area specifically
+  const [titleClickTimer, setTitleClickTimer] = useState<NodeJS.Timeout | null>(
+    null
+  );
+  const titleClickCount = useRef(0);
+  const clickTimeout = 250; // ms to wait before deciding it's a single click
+
+  // Handle click on entity container (icon, background)
+  const handleContainerClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
     if (isSingleClick) {
-      setTimeout(() => {
-        handleDoubleClickEntity(
-          entity.type === 'shortcut' ? entity.targetId : entity.id
-        );
-      }, 600);
+      // For single-click mode, immediately open
+      handleDoubleClickEntity(
+        entity.type === 'shortcut' ? entity.targetId : entity.id
+      );
     } else {
+      // For double-click mode, just select the entity
       selectEntity(entity.id, e.ctrlKey);
     }
   };
 
+  // Handle click specifically on the title area
+  const handleTitleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // Increment click counter
+    titleClickCount.current += 1;
+
+    // If it's the first click
+    if (titleClickCount.current === 1) {
+      // Set a timer to handle as a single click after the timeout
+      const timer = setTimeout(() => {
+        // Reset counter
+        titleClickCount.current = 0;
+
+        // If already selected and not in rename mode, enter rename mode
+        if (isSelected && !isRenaming) {
+          startRename(e);
+        } else {
+          // Otherwise just select the entity
+          selectEntity(entity.id, e.ctrlKey);
+        }
+      }, clickTimeout);
+
+      setTitleClickTimer(timer);
+    } else {
+      // It's a double click - cancel the single click action
+      titleClickCount.current = 0;
+
+      // Clear the timer to prevent the single-click action
+      if (titleClickTimer) {
+        clearTimeout(titleClickTimer);
+        setTitleClickTimer(null);
+      }
+
+      // Use the standard double-click handler
+      handleDoubleClick();
+    }
+  };
+
   const handleDoubleClick = () => {
-    handleDoubleClickEntity(
-      entity.type === 'shortcut' ? entity.targetId : entity.id
-    );
+    if (!isRenaming) {
+      handleDoubleClickEntity(
+        entity.type === 'shortcut' ? entity.targetId : entity.id
+      );
+    }
+  };
+
+  // Clean up any timers when needed
+  const cleanupTimers = () => {
+    if (titleClickTimer) {
+      clearTimeout(titleClickTimer);
+      setTitleClickTimer(null);
+    }
   };
 
   return (
@@ -57,10 +131,13 @@ const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
       data-entity-id={entity.id}
       style={containerStyle}
       onDrop={(e) => e.stopPropagation()}
-      onClick={handleClick}
+      onClick={handleContainerClick}
       onDoubleClick={handleDoubleClick}
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseLeave={(e) => {
+        handleMouseLeave();
+        cleanupTimers();
+      }}
     >
       <EntityIcons
         iconPath={entity.iconPath}
@@ -69,7 +146,22 @@ const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
         onDragStart={(e) => handleDragStart(e, entity.id)}
         isShortcut={entity.type === 'shortcut'}
       />
-      <div className={titleClass}>{entity.name}</div>
+      {isRenaming ? (
+        <input
+          ref={inputRef}
+          className={styles.renameInput}
+          value={tempName}
+          onChange={handleRenameChange}
+          onBlur={handleRenameBlur}
+          onKeyDown={handleRenameKeyDown}
+          onClick={(e) => e.stopPropagation()}
+          autoFocus
+        />
+      ) : (
+        <div className={`${titleClass}`} onClick={handleTitleClick}>
+          {entity.name}
+        </div>
+      )}
     </div>
   );
 };

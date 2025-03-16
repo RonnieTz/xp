@@ -1,9 +1,11 @@
-import { useAppSelector } from '../reduxHooks';
+import { useAppSelector, useAppDispatch } from '../reduxHooks';
 import { Entity } from '@/app/features/fileSystem/fileSystemTypes';
+import { removeEntity as removeEntityAction } from '@/app/features/fileSystem/fileSystemSlice';
 
 export const useEntityUtils = () => {
   const entities = useAppSelector((state) => state.fileSystem.entities);
   const windows = useAppSelector((state) => state.windows.windows);
+  const dispatch = useAppDispatch();
 
   // Helper function to find an entity by ID
   const findEntityById = (id: string): Entity | undefined => {
@@ -18,10 +20,16 @@ export const useEntityUtils = () => {
     return window?.id;
   };
 
+  // Function to remove an entity
+  const removeEntity = (entityId: string) => {
+    dispatch(removeEntityAction(entityId));
+  };
+
   return {
     entities,
     windows,
     findEntityById,
     findWindowShowingFolder,
+    removeEntity,
   };
 };

@@ -13,8 +13,6 @@ const tasksSlice = createSlice({
   initialState,
   reducers: {
     addTask: (state, action: PayloadAction<string>) => {
-      console.log('addTask', action.payload);
-
       // add task if not exists
       if (!state.tasks.includes(action.payload)) {
         state.tasks.push(action.payload);
