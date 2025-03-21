@@ -56,13 +56,15 @@ const WindowHeader: React.FC<WindowHeaderProps> = ({
         alt="header"
       />
       <span className="window-header-title">
-        <Image
-          src={iconPath}
-          alt="icon"
-          width={28}
-          height={28}
-          className="window-header-icon"
-        />
+        {!isModal && (
+          <Image
+            src={iconPath}
+            alt="icon"
+            width={28}
+            height={28}
+            className="window-header-icon"
+          />
+        )}
         <div style={{ translate: '-2px 2px' }}>{displayTitle}</div>
       </span>
       <div className="window-header-controls">

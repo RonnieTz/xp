@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks/reduxHooks';
 import {
   closeWindow,
@@ -13,6 +13,7 @@ import {
 import { addTask, removeTask } from '@/app/features/tasks/tasksSlice';
 import { useModalWindow } from './useModalWindow';
 import { useWindowFocus } from './useWindowFocus';
+import { useEntities } from '@/app/hooks/useEntities';
 
 interface Pos {
   x: number;
@@ -23,11 +24,34 @@ interface Size {
   height: number;
 }
 
+// Add throttle utility function
+const throttle = (callback: Function, delay = 16) => {
+  let lastCall = 0;
+  let requestId: number | null = null;
+
+  return function (...args: any[]) {
+    const now = performance.now();
+    if (now - lastCall < delay) {
+      if (requestId) {
+        cancelAnimationFrame(requestId);
+      }
+      requestId = requestAnimationFrame(() => {
+        lastCall = now;
+        callback(...args);
+      });
+      return;
+    }
+    lastCall = now;
+    callback(...args);
+  };
+};
+
 export function useWindowManager(
   windowId: string,
   initialPos: Pos,
   initialSize: Size
 ) {
+  const { selectEntity, clearSelections, setSelections } = useEntities();
   const { focus } = useWindowFocus(windowId);
   const dispatch = useAppDispatch();
   const { focusedWindow, windowsOrder, windows } = useAppSelector(
@@ -88,6 +112,8 @@ export function useWindowManager(
     // If this is a modal window, close it and focus the parent window
     if (isModal && parentId) {
       dispatch(closeWindow(windowId));
+      clearSelections();
+      setSelections(window.modalTarget || []);
       // Focus the parent window after closing the modal
       setTimeout(() => {
         dispatch(focusWindow(parentId));
@@ -133,7 +159,8 @@ export function useWindowManager(
   const [isDragging, setIsDragging] = useState(false);
   const startPosRef = useRef({ mouseX: 0, mouseY: 0, windowX: 0, windowY: 0 });
 
-  const handleMouseMove = (e: MouseEvent) => {
+  // Define raw handlers that will be throttled
+  const handleMouseMoveRaw = (e: MouseEvent) => {
     const dx = e.clientX - startPosRef.current.mouseX;
     const dy = e.clientY - startPosRef.current.mouseY;
     const proposedY = startPosRef.current.windowY + dy;
@@ -148,10 +175,14 @@ export function useWindowManager(
     });
   };
 
+  // Create throttled versions of the handlers
+  const handleMouseMove = useRef(throttle(handleMouseMoveRaw, 16)).current;
+
   const handleMouseUp = () => {
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
     setIsDragging(false);
+    // dispatch(updateWindowPosition({ id: windowId, pos: currentPos }));
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -189,7 +220,8 @@ export function useWindowManager(
 
   const MIN_SIZE = 400; // minimum width or height
 
-  const handleResizeMouseMove = (e: MouseEvent) => {
+  // Define raw resize handler that will be throttled
+  const handleResizeMouseMoveRaw = (e: MouseEvent) => {
     // No resizing for modal windows
     if (isModal) return;
 
@@ -238,6 +270,11 @@ export function useWindowManager(
     setCurrentSize(newSize);
   };
 
+  // Create throttled version of resize handler
+  const handleResizeMouseMove = useRef(
+    throttle(handleResizeMouseMoveRaw, 16)
+  ).current;
+
   const handleResizeMouseUp = () => {
     document.removeEventListener('mousemove', handleResizeMouseMove);
     document.removeEventListener('mouseup', handleResizeMouseUp);
@@ -268,6 +305,16 @@ export function useWindowManager(
     document.addEventListener('mouseup', handleResizeMouseUp);
   };
 
+  // Clean up event listeners when component unmounts
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleResizeMouseMove);
+      document.removeEventListener('mouseup', handleResizeMouseUp);
+    };
+  }, [handleMouseMove, handleResizeMouseMove]);
+
   return {
     open,
     close,
@@ -285,5 +332,7 @@ export function useWindowManager(
     hasOpenModal,
     focusActiveModal,
     activeModalId,
+    windows,
+    focusedWindow,
   };
 }

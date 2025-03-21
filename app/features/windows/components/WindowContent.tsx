@@ -3,6 +3,8 @@ import { WindowEntity } from '../windowsState';
 import { useAppSelector } from '@/app/hooks/reduxHooks';
 import Explorer from '../../applications/explorer/Explorer';
 import FolderOptions from '../../applications/explorer/folderOptions/FolderOptions';
+import RenameError from '../../modalWindows/RenameError';
+import ConfirmDelete from '../../modalWindows/ConfirmDelete';
 
 interface WindowContentProps {
   window: WindowEntity;
@@ -30,6 +32,7 @@ const WindowContent: React.FC<WindowContentProps> = ({
         width: isMaximized ? '100%' : undefined,
         height: isMaximized ? 'calc(100% - 80px)' : undefined,
         left: isMaximized ? 0 : undefined,
+        pointerEvents: window.hasOpenModal ? 'none' : undefined,
       }}
     >
       {entity?.type === 'folder' && (
@@ -41,6 +44,15 @@ const WindowContent: React.FC<WindowContentProps> = ({
       )}
       {window.id.includes('FolderOptionsWindow') && (
         <FolderOptions windowId={window.id} />
+      )}
+      {window.id.includes('RenameError') && (
+        <RenameError windowId={window.id} targetId={window.modalTarget || []} />
+      )}
+      {window.id.includes('ConfirmDelete') && (
+        <ConfirmDelete
+          windowId={window.id}
+          targetId={window.modalTarget || []}
+        />
       )}
     </div>
   );

@@ -1,19 +1,24 @@
 import { useAppDispatch, useAppSelector } from './reduxHooks';
 import { setSelectedEntityIds } from '../features/fileSystem/fileSystemSlice';
 import { Entity } from '../features/fileSystem/fileSystemTypes';
+import { useEntities } from './useEntities';
+import { useWindowManager } from '../features/windows/hooks/useWindowManager';
 
 export const useArrowSelection = () => {
   const dispatch = useAppDispatch();
-  const allEntities = useAppSelector((state) =>
-    state.fileSystem.entities.filter((e) => e.folderId === 'root')
+  const { entities, selectedEntityIds } = useEntities();
+  const { focusedWindow } = useWindowManager(
+    '',
+    { x: 0, y: 0 },
+    { height: 0, width: 0 }
   );
-  const selectedEntityIds = useAppSelector(
-    (state) => state.fileSystem.selectedEntityIds
-  );
+  const someEntityIsRenaming = entities.some((e) => e.isRenaming);
+  const allEntities = entities.filter((e) => e.folderId === 'root');
 
   const handleArrowKey = (
     direction: 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight'
   ) => {
+    if (someEntityIsRenaming || focusedWindow) return;
     // If nothing is selected, select the first entity if available.
     let current = allEntities.find((e) => e.id === selectedEntityIds[0]);
     if (!current && allEntities.length > 0) {

@@ -2,11 +2,23 @@ import { useState, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from './reduxHooks';
 import { renameEntity } from '../features/fileSystem/fileSystemSlice';
 import { useEntities } from './useEntities';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  openWindow,
+  setHasOpenModal,
+  focusWindow,
+} from '../features/windows/windowsSlice';
 
 export const useEntityRename = (entityId: string, entityName: string) => {
-  const { setIsRenaming, entities } = useEntities();
+  const { setIsRenaming, entities, clearSelections, selectEntity } =
+    useEntities();
+  const { windows, desktopSize } = useAppSelector((state) => state.windows);
   // Safely check if entity exists before trying to access its properties
   const entity = entityId ? entities.find((e) => e.id === entityId) : undefined;
+  const parentFolderId = entity?.folderId || '';
+
+  const XPwindow = windows.find((w) => w.entityId === parentFolderId);
+
   const isRenaming = entity?.isRenaming || false;
 
   const [tempName, setTempName] = useState(entityName);
@@ -15,6 +27,20 @@ export const useEntityRename = (entityId: string, entityName: string) => {
   const dispatch = useAppDispatch();
   const selectedEntityIds = useAppSelector(
     (state) => state.fileSystem.selectedEntityIds
+  );
+  const allEntities = useAppSelector((state) => state.fileSystem.entities);
+
+  const currentEntity = allEntities.find((entity) => entity.id === entityId);
+
+  // Get all entities in the same parent folder
+  const siblingsInSameFolder = allEntities.filter(
+    (entity) =>
+      entity.folderId === currentEntity?.folderId && entity.id !== entityId
+  );
+
+  // Check if the new name already exists in the same folder
+  const nameExists = siblingsInSameFolder.some(
+    (entity) => entity.name.toLowerCase() === tempName.trim().toLowerCase()
   );
 
   // Reset temp name when entity name changes
@@ -70,8 +96,13 @@ export const useEntityRename = (entityId: string, entityName: string) => {
 
   const startRename = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (entityId && selectedEntityIds.includes(entityId)) {
+    if (
+      entityId &&
+      selectedEntityIds.includes(entityId) &&
+      selectedEntityIds.length === 1
+    ) {
       setIsRenaming(entityId, true);
+      clearSelections();
     }
   };
 
@@ -81,8 +112,8 @@ export const useEntityRename = (entityId: string, entityName: string) => {
 
   const handleRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      console.log('Enter key pressed');
       e.preventDefault();
+      // if (nameExists) return;
       commitRename();
     } else if (e.key === 'Escape') {
       cancelRename();
@@ -96,11 +127,25 @@ export const useEntityRename = (entityId: string, entityName: string) => {
 
   const commitRename = () => {
     if (entityId && tempName.trim() !== '' && tempName !== entityName) {
-      dispatch(renameEntity({ id: entityId, newName: tempName }));
+      if (currentEntity) {
+        if (nameExists) {
+          openRenameError();
+        } else {
+          // Proceed with rename if no duplicate exists
+          dispatch(renameEntity({ id: entityId, newName: tempName }));
+          setTimeout(() => {
+            selectEntity(entityId, false);
+          }, 100);
+        }
+      } else {
+        // Fallback - dispatch rename action if entity not found (shouldn't happen)
+        dispatch(renameEntity({ id: entityId, newName: tempName }));
+      }
     } else {
       // If name is empty or unchanged, revert to original
       setTempName(entityName);
     }
+
     if (entityId) {
       setIsRenaming(entityId, false);
     }
@@ -111,6 +156,37 @@ export const useEntityRename = (entityId: string, entityName: string) => {
     if (entityId) {
       setIsRenaming(entityId, false);
     }
+  };
+
+  const openRenameError = () => {
+    const modalId = `RenameError-${uuidv4()}`;
+
+    // Safely access window properties with fallbacks
+    const windowId = XPwindow?.id ?? parentFolderId;
+
+    dispatch(setHasOpenModal({ id: windowId, hasOpenModal: true }));
+    const newModalSize = { width: 750, height: 150 };
+    const { height: desktopHeight, width: desktopWidth } = desktopSize;
+    const windowPosition = {
+      x: (desktopWidth - newModalSize.width) / 2,
+      y: (desktopHeight - newModalSize.height) / 2,
+    };
+
+    // Open the folder options modal window with the parent ID
+    dispatch(
+      openWindow({
+        id: modalId,
+        title: 'Error Renaming File or Folder',
+        isModal: true,
+        parentId: windowId,
+        size: newModalSize,
+        position: windowPosition,
+        modalTarget: [entityId],
+      })
+    );
+    setTimeout(() => {
+      dispatch(focusWindow(modalId));
+    }, 50);
   };
 
   return {

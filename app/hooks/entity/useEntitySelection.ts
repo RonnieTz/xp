@@ -1,5 +1,8 @@
 import { useAppDispatch, useAppSelector } from '../reduxHooks';
-import { setSelectedEntityIds } from '@/app/features/fileSystem/fileSystemSlice';
+import {
+  setSelectedEntityIds,
+  setSelections as setSelectionsAction,
+} from '@/app/features/fileSystem/fileSystemSlice';
 import { focusWindow } from '@/app/features/windows/windowsSlice';
 
 export const useEntitySelection = () => {
@@ -9,6 +12,7 @@ export const useEntitySelection = () => {
   );
 
   const clearSelections = () => dispatch(setSelectedEntityIds([]));
+  const setSelections = (ids: string[]) => dispatch(setSelectionsAction(ids));
 
   // Toggle selection per entity when ctrl is pressed
   const selectEntity = (id: string, ctrlPressed: boolean) => {
@@ -47,5 +51,6 @@ export const useEntitySelection = () => {
     selectedEntityIds,
     clearSelections,
     selectEntity,
+    setSelections,
   };
 };

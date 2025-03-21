@@ -63,6 +63,7 @@ export interface FileSystemState {
     isSingleClick: boolean;
     underlineOption: 'browser' | 'hover';
   };
+  clipboard: string[];
 }
 
 export const initialState: FileSystemState = {
@@ -93,7 +94,7 @@ export const initialState: FileSystemState = {
         x: 0,
         y: 160,
       },
-      folderId: 'root',
+      folderId: '1',
       iconPath: foldericon,
       windowId: 'folder2Window',
       children: [],
@@ -162,4 +163,5 @@ export const initialState: FileSystemState = {
     isSingleClick: false,
     underlineOption: 'browser',
   },
+  clipboard: [],
 };

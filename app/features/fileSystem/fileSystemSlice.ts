@@ -143,6 +143,9 @@ const fileSystemSlice = createSlice({
         }
       }
     },
+    setSelections: (state, action: PayloadAction<string[]>) => {
+      state.selectedEntityIds = action.payload;
+    },
   },
 });
 
@@ -162,5 +165,6 @@ export const {
   updateEntityWindowId,
   renameEntity, // Export the new action
   setIsRenaming,
+  setSelections,
 } = fileSystemSlice.actions;
 export default fileSystemSlice.reducer;

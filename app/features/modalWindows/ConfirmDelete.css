@@ -1,0 +1,53 @@
+.confirm-delete-container {
+  background-color: #ece9d8;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  padding: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  position: relative;
+}
+
+.confirm-delete-message {
+  font-size: 13px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+  height: 60px;
+}
+
+.confirm-delete-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+.confirm-delete-selected {
+  box-shadow: 0px -0.5px 2.5px 0 #003c74 inset;
+}
+
+.confirm-delete-buttons div {
+  border: 1px solid #003c74;
+  border-radius: 2px;
+  background: linear-gradient(white 50%, #f0f0ea 90%, #d6d0c5);
+  color: #000;
+  font-size: 13px;
+  min-width: 90px;
+  display: grid;
+  place-items: center;
+}
+
+.confirm-delete-buttons div:hover {
+  box-shadow: 0 -0.5px 2px 0 #e59700 inset;
+}
+
+.confirm-delete-buttons div:active {
+  background: linear-gradient(#d1ccc1 5%, #f2f1ee, #e2e2da 90%);
+  box-shadow: none;
+}

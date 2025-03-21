@@ -21,7 +21,7 @@ export const useEntityInteraction = () => {
   const handleDoubleClickEntity = (id: string) => {
     dispatch(clearSelections());
     const entity = entities.find((ent) => ent.id === id);
-    if (!entity) return;
+    if (!entity || entity.isRenaming) return;
 
     if ('windowId' in entity) {
       // First, check if this entity's designated window is already open but showing a different folder

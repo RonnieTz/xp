@@ -11,8 +11,13 @@ import {
 } from '../features/fileSystem/fileSystemSlice';
 
 export const useEntities = () => {
-  const { entities, removeEntity } = useEntityUtils();
-  const { selectedEntityIds, clearSelections, selectEntity } =
+  const {
+    entities,
+    openRemoveEntityConfirmation,
+    findEntityById,
+    removeEntity,
+  } = useEntityUtils();
+  const { selectedEntityIds, clearSelections, selectEntity, setSelections } =
     useEntitySelection();
   const { handleDragStart, handleDrop, handleDragOver } = useEntityDrag();
   const { handleNavigateBack, handleNavigateForward, getNavigationState } =
@@ -55,8 +60,11 @@ export const useEntities = () => {
     handleNavigateBack,
     handleNavigateForward,
     getNavigationState,
-    removeEntity,
+    openRemoveEntityConfirmation,
     handleRenameEntity,
     setIsRenaming,
+    setSelections,
+    findEntityById,
+    removeEntity,
   };
 };

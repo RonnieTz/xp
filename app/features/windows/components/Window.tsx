@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import { WindowEntity } from '../windowsState';
 import WindowHeader from './WindowHeader';
 import WindowContent from './WindowContent';
@@ -10,6 +10,47 @@ import ResizeAnchors from './ResizeAnchors';
 interface WindowProps {
   window: WindowEntity;
 }
+
+const WindowHeaderWrapper = memo(
+  ({
+    window,
+    isFocused,
+    close,
+    minimize,
+    maximize,
+    unmaximize,
+    handleMouseDown,
+  }: {
+    window: WindowEntity;
+    isFocused: boolean;
+    close: () => void;
+    minimize: () => void;
+    maximize: () => void;
+    unmaximize: () => void;
+    handleMouseDown: (e: React.MouseEvent) => void;
+  }) => (
+    <div
+      onMouseDown={(e) => {
+        handleMouseDown(e);
+        if (window.isMaximized) return;
+      }}
+    >
+      <WindowHeader
+        isModal={window.isModal || false}
+        window={window}
+        isFocused={isFocused}
+        close={close}
+        minimize={minimize}
+        maximize={maximize}
+        unmaximize={unmaximize}
+      />
+    </div>
+  )
+);
+
+const MemoizedWindowContent = memo(WindowContent);
+const MemoizedWindowBorders = memo(WindowBorders);
+const MemoizedResizeAnchors = memo(ResizeAnchors);
 
 const Window: React.FC<WindowProps> = ({ window }) => {
   const {
@@ -49,13 +90,34 @@ const Window: React.FC<WindowProps> = ({ window }) => {
     style.height = '100%';
   }
 
-  const disableInteractions = (e: any) => {
-    if (window.hasOpenModal) {
-      e.preventDefault();
+  const disableInteractions = useCallback(
+    (e: any) => {
+      if (window.hasOpenModal) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+    },
+    [window.hasOpenModal]
+  );
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
       e.stopPropagation();
-      return;
-    }
-  };
+      focus();
+    },
+    [focus]
+  );
+
+  const handleDragStart = useCallback(
+    (e: React.DragEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      focus();
+      e.dataTransfer.setDragImage(new Image(), 0, 0);
+    },
+    [focus]
+  );
 
   return (
     <div
@@ -68,42 +130,31 @@ const Window: React.FC<WindowProps> = ({ window }) => {
         disableInteractions(e);
       }}
       onContextMenuCapture={disableInteractions}
-      onClick={(e) => {
-        e.stopPropagation();
-        focus();
-      }}
-      onDragStart={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        focus();
-        e.dataTransfer.setDragImage(new Image(), 0, 0);
-      }}
+      onClick={handleClick}
+      onDragStart={handleDragStart}
     >
-      <div
-        onMouseDown={(e) => {
-          handleMouseDown(e);
-          if (window.isMaximized) return;
-        }}
-      >
-        <WindowHeader
-          isModal={window.isModal || false}
-          window={window}
-          isFocused={isFocused}
-          close={close}
-          minimize={minimize}
-          maximize={maximize}
-          unmaximize={unmaximize}
-        />
-      </div>
-      <WindowContent window={window} currentWidth={currentSize.width} />
+      <WindowHeaderWrapper
+        window={window}
+        isFocused={isFocused}
+        close={close}
+        minimize={minimize}
+        maximize={maximize}
+        unmaximize={unmaximize}
+        handleMouseDown={handleMouseDown}
+      />
+      <MemoizedWindowContent window={window} currentWidth={currentSize.width} />
       {!window.isMaximized && (
         <>
-          <WindowBorders isFocused={isFocused} />
-          <ResizeAnchors handleAnchorMouseDown={handleAnchorMouseDown} />
+          <MemoizedWindowBorders isFocused={isFocused} />
+          {!window.isModal && (
+            <MemoizedResizeAnchors
+              handleAnchorMouseDown={handleAnchorMouseDown}
+            />
+          )}
         </>
       )}
     </div>
   );
 };
 
-export default Window;
+export default memo(Window);

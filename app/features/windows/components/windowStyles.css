@@ -23,7 +23,6 @@
   display: flex;
   align-items: center;
   height: 100%;
-  transform: translateY(2px);
 }
 
 .window-header-icon {

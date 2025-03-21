@@ -14,7 +14,8 @@ export function useSidebarItems(folderId: string): {
   sidebarItems: SidebarItem[];
   selectedEntitiesCount: number;
 } {
-  const { entities, selectedEntityIds, removeEntity } = useEntities();
+  const { entities, selectedEntityIds, openRemoveEntityConfirmation } =
+    useEntities();
 
   // Get selected entities in the current folder
   const selectedEntitiesInFolder = useMemo(() => {
@@ -60,7 +61,6 @@ export function useSidebarItems(folderId: string): {
         onClick: (e) => {
           if (selectedEntityId) {
             startRename(e);
-            console.log(`Attempting to rename entity: ${selectedEntityId}`);
           }
         },
       });
@@ -80,35 +80,38 @@ export function useSidebarItems(folderId: string): {
         show: true,
         onClick: () => {
           if (selectedEntityId) {
-            removeEntity(selectedEntityId);
+            openRemoveEntityConfirmation(selectedEntityId);
           }
         },
       });
     } else {
       items.push({
-        title: `Move selected items`,
+        title: `Move the selected items`,
         icon: moveIcon,
         show: true,
       });
       items.push({
-        title: `Copy selected items`,
+        title: `Copy the selected items`,
         icon: copyIcon,
         show: true,
       });
       items.push({
-        title: `Delete selected items`,
+        title: `Delete the selected items`,
         icon: deleteIcon,
         show: true,
         onClick: () => {
-          selectedEntitiesInFolder.forEach((entity) => {
-            removeEntity(entity.id);
-          });
+          openRemoveEntityConfirmation(selectedEntityId);
         },
       });
     }
 
     return items;
-  }, [selectedEntitiesInFolder, removeEntity, selectedEntityId, startRename]);
+  }, [
+    selectedEntitiesInFolder,
+    openRemoveEntityConfirmation,
+    selectedEntityId,
+    startRename,
+  ]);
 
   return {
     sidebarItems,

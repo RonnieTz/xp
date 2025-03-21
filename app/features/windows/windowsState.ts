@@ -26,6 +26,7 @@ export interface WindowEntity {
   isMinimized: boolean;
   isMaximized: boolean;
   isModal?: boolean; // New flag for modal windows
+  modalTarget?: string[];
   parentId?: string; // Reference to parent window id if it's a modal
   hasOpenModal?: boolean; // Flag to indicate if this window has an open modal
   iconPath: StaticImageData;
@@ -37,6 +38,7 @@ export interface WindowState {
   windows: WindowEntity[];
   focusedWindow: string | null;
   windowsOrder: string[]; // To track z-index ordering
+  desktopSize: Size;
 }
 
 export const initialState: WindowState = {
@@ -127,4 +129,5 @@ export const initialState: WindowState = {
   ],
   focusedWindow: null,
   windowsOrder: [],
+  desktopSize: { width: 1920, height: 1080 },
 };

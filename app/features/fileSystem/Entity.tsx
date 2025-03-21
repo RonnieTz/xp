@@ -10,21 +10,18 @@ import { useState, useRef } from 'react';
 
 interface EntityProps {
   entity: Entity;
+  onDesktop?: boolean;
 }
 
-const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
+const EntityComponent: React.FC<EntityProps> = ({ entity, onDesktop }) => {
   const selectedEntityIds = useAppSelector(
     (state) => state.fileSystem.selectedEntityIds
   );
   const { folderOptions } = useAppSelector((state) => state.fileSystem);
   const { isSingleClick } = folderOptions;
   const isSelected = selectedEntityIds.includes(entity.id);
-  const {
-    selectEntity,
-    handleDragStart,
-    handleDoubleClickEntity,
-    handleRenameEntity,
-  } = useEntities();
+  const { selectEntity, handleDragStart, handleDoubleClickEntity } =
+    useEntities();
 
   // Use custom hooks
   const { isHovered, handleMouseEnter, handleMouseLeave } = useHoverSelection(
@@ -126,42 +123,44 @@ const EntityComponent: React.FC<EntityProps> = ({ entity }) => {
   };
 
   return (
-    <div
-      className={styles.entityContainer}
-      data-entity-id={entity.id}
-      style={containerStyle}
-      onDrop={(e) => e.stopPropagation()}
-      onClick={handleContainerClick}
-      onDoubleClick={handleDoubleClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={(e) => {
-        handleMouseLeave();
-        cleanupTimers();
-      }}
-    >
-      <EntityIcons
-        iconPath={entity.iconPath}
-        alt={`${entity.name} icon`}
-        dynamicImageStyle={imageStyle}
-        onDragStart={(e) => handleDragStart(e, entity.id)}
-        isShortcut={entity.type === 'shortcut'}
-      />
-      {isRenaming ? (
-        <input
-          ref={inputRef}
-          className={styles.renameInput}
-          value={tempName}
-          onChange={handleRenameChange}
-          onBlur={handleRenameBlur}
-          onKeyDown={handleRenameKeyDown}
-          onClick={(e) => e.stopPropagation()}
-          autoFocus
+    <div style={{ position: 'relative' }}>
+      <div
+        className={styles.entityContainer}
+        data-entity-id={entity.id}
+        style={containerStyle}
+        onDrop={(e) => e.stopPropagation()}
+        onClick={handleContainerClick}
+        onDoubleClick={handleDoubleClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={(e) => {
+          handleMouseLeave();
+          cleanupTimers();
+        }}
+      >
+        <EntityIcons
+          iconPath={entity.iconPath}
+          alt={`${entity.name} icon`}
+          dynamicImageStyle={imageStyle}
+          onDragStart={(e) => handleDragStart(e, entity.id)}
+          isShortcut={entity.type === 'shortcut'}
         />
-      ) : (
-        <div className={`${titleClass}`} onClick={handleTitleClick}>
-          {entity.name}
-        </div>
-      )}
+        {isRenaming ? (
+          <input
+            ref={inputRef}
+            className={styles.renameInput}
+            value={tempName}
+            onChange={handleRenameChange}
+            onBlur={handleRenameBlur}
+            onKeyDown={handleRenameKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            autoFocus
+          />
+        ) : (
+          <span className={`${titleClass}`} onClick={handleTitleClick}>
+            {entity.name}
+          </span>
+        )}
+      </div>
     </div>
   );
 };

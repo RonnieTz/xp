@@ -1,62 +1,52 @@
-import { useMemo } from 'react';
 import { Entity } from '../features/fileSystem/fileSystemTypes';
-import styles from '../features/fileSystem/Entity.module.css';
 import { useAppSelector } from './reduxHooks';
+import styles from '../features/fileSystem/Entity.module.css';
 
 export const useEntityStyles = (
   entity: Entity,
   isSelected: boolean,
   isHovered: boolean
 ) => {
-  const folderOptions = useAppSelector(
-    (state) => state.fileSystem.folderOptions
-  );
-  const { underlineOption } = folderOptions;
+  const { folderOptions } = useAppSelector((state) => state.fileSystem);
+  const { isSingleClick, underlineOption } = folderOptions;
 
-  const containerStyle = useMemo(() => {
-    return {
-      left: `${entity.position.x}px`,
-      top: `${entity.position.y}px`,
-    };
-  }, [entity.position.x, entity.position.y]);
+  // Position styling
+  const containerStyle: React.CSSProperties = {
+    top: entity.position.y,
+    left: entity.position.x,
+    position: entity.folderId === 'root' ? 'absolute' : 'sticky',
+    zIndex: isSelected ? 100000000 : 0,
+  };
 
-  const imageStyle = useMemo(() => {
-    return {
-      cursor: 'pointer', // Image always has pointer cursor
-      opacity: isSelected ? 0.8 : 1,
-    };
-  }, [isSelected]);
+  // Image styling
+  const baseShadow = 'drop-shadow(1px 1px 2px rgba(0,0,0,0.2))';
+  const brightness = isSelected ? 'brightness(0.6) ' : '';
+  const imageStyle: React.CSSProperties = {
+    filter: brightness + baseShadow,
+    position: 'absolute',
+    top: '12%',
+  };
 
-  const titleClass = useMemo(() => {
-    let baseClass = styles.title;
+  // Title styling
+  let titleClass = styles.title;
 
-    // Add selected class if selected
-    if (isSelected) {
-      baseClass += ` ${styles.titleSelected}`;
+  if (isSelected) {
+    titleClass +=
+      isSingleClick && isHovered
+        ? ' ' + styles.titleSelectedHovered
+        : ' ' + styles.titleSelected;
+  } else if (entity.folderId === 'root') {
+    titleClass += ' ' + styles.titleRoot;
+  } else {
+    titleClass += ' ' + styles.titleDefault;
+  }
 
-      if (isHovered) {
-        baseClass += ` ${styles.titleSelectedHovered}`;
-      }
-    }
-    // Add root class if in root folder
-    else if (entity.folderId === 'root') {
-      baseClass += ` ${styles.titleRoot}`;
-    }
-    // Otherwise use default styling
-    else {
-      baseClass += ` ${styles.titleDefault}`;
-    }
-
-    // Add underline styling based on folder options
-    if (
-      underlineOption === 'browser' ||
-      (underlineOption === 'hover' && isHovered)
-    ) {
-      baseClass += ` ${styles.titleUnderlined}`;
-    }
-
-    return baseClass;
-  }, [isSelected, isHovered, entity.folderId, underlineOption]);
+  // Handle underline styles
+  if (isSingleClick && underlineOption === 'browser') {
+    titleClass += ' ' + styles.titleUnderlined;
+  } else if (underlineOption === 'hover' && isHovered) {
+    titleClass += ' ' + styles.titleUnderlined;
+  }
 
   return { containerStyle, imageStyle, titleClass };
 };

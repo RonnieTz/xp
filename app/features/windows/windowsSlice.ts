@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { initialState, WindowEntity } from './windowsState';
+import { initialState, Position, WindowEntity } from './windowsState';
 import { StaticImageData } from 'next/image';
 
 interface OpenWindowPayload {
@@ -13,6 +13,7 @@ interface OpenWindowPayload {
   iconPath?: StaticImageData;
   isModal?: boolean; // New prop for modal windows
   parentId?: string; // Parent window ID for modals
+  modalTarget?: string[];
 }
 
 interface NavigateToFolderPayload {
@@ -155,6 +156,7 @@ const windowsSlice = createSlice({
             isMinimized: action.payload.isMinimized || false,
             isMaximized: action.payload.isMaximized || false,
             isModal: action.payload.isModal || false,
+            modalTarget: action.payload.modalTarget,
             parentId: action.payload.parentId,
             iconPath: action.payload.iconPath!,
             entityId: action.payload.entityId || '',
@@ -406,6 +408,23 @@ const windowsSlice = createSlice({
         state.windows[windowIndex].hasOpenModal = hasOpenModal;
       }
     },
+    updateWindowPosition: (
+      state,
+      action: PayloadAction<{ id: string; pos: Position }>
+    ) => {
+      const { id, pos } = action.payload;
+      const windowIndex = state.windows.findIndex((window) => window.id === id);
+
+      if (windowIndex !== -1) {
+        state.windows[windowIndex].position = pos;
+      }
+    },
+    setDesktopSize: (
+      state,
+      action: PayloadAction<{ width: number; height: number }>
+    ) => {
+      state.desktopSize = action.payload;
+    },
   },
 });
 
@@ -428,6 +447,8 @@ export const {
   resetNavigationHistory,
   openModal,
   closeParentModals,
-  setHasOpenModal, // Export the new action
+  setHasOpenModal,
+  updateWindowPosition,
+  setDesktopSize,
 } = windowsSlice.actions;
 export default windowsSlice.reducer;
